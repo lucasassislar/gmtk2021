@@ -24,7 +24,10 @@ namespace ChainedWithMe {
         }
 
         private void FixedUpdate() {
-            objCharController.Move(new Vector3(inputData.Horizontal * -fSpeed, 0, inputData.Vertical * -fSpeed));
+            float fGravity = Physics.gravity.y;
+
+
+            objCharController.Move(new Vector3(inputData.Horizontal * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, inputData.Vertical * -fSpeed * Time.deltaTime));
         }
     }
 }
