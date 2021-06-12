@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ChainedWithMe {
-    public class ListEnemyComponent : MonoBehaviour {
+    public class ListEnemyComponent : MonoBehaviour, IRestartable {
         public List<EnemyComponent> enemies;
+
+        private void Start() {
+            GameManager.Instance.RegisterRestartable(this);
+        }
+
+        public void Restart() {
+            enemies.Clear();
+        }
 
         private void OnTriggerEnter(Collider other) {
             if (other.gameObject.layer != LayerMask.NameToLayer("Enemy")) {
@@ -26,5 +34,6 @@ namespace ChainedWithMe {
             EnemyComponent enemyComp = other.GetComponent<EnemyComponent>();
             enemies.Remove(enemyComp);
         }
+
     }
 }
