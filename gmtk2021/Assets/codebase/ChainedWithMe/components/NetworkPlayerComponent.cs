@@ -49,7 +49,7 @@ namespace ChainedWithMe {
             }
 
             if (IsOwner) {
-                objCharController.Move(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
+                objCharController.SimpleMove(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
 
                 if (IsServer) {
                     SendDataClientRpc(vInputData.x, vInputData.y, vInputData.z);
@@ -58,7 +58,7 @@ namespace ChainedWithMe {
                 }
             } else {
                 Vector3 vData = Data.Value;
-                objCharController.Move(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
+                objCharController.SimpleMove(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
 
                 //objCharController.enabled = false;
                 //objCharController.transform.position = Position.Value;
