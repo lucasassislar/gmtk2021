@@ -38,8 +38,6 @@ namespace ChainedWithMe {
 
             if (IsServer) {
                 SendPosClientRpc();
-            } else {
-                SendPosServerRpc();
             }
 
             if (fTimer > 1) {
@@ -96,11 +94,6 @@ namespace ChainedWithMe {
 
         [ClientRpc]
         private void SendPosClientRpc() {
-            Position.Value = objCharController.transform.position;
-        }
-
-        [ServerRpc]
-        private void SendPosServerRpc() {
             Position.Value = objCharController.transform.position;
         }
 
