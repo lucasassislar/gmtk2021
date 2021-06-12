@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MLAPI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,9 @@ namespace ChainedWithMe {
     public class PlayerComponent : MonoBehaviour {
         public float fSpeed = 1;
 
+        public float fAttackCooldown = 0.5f;
+
+        private float fAttackTimer;
         private CharacterController objCharController;
 
         private InputData inputData;
@@ -18,9 +22,18 @@ namespace ChainedWithMe {
         }
 
         private void Update() {
-            inputData = new InputData();
-            inputData.Horizontal = Input.GetAxisRaw("Horizontal");
-            inputData.Vertical = Input.GetAxisRaw("Vertical");
+            fAttackTimer += Time.deltaTime;
+
+            //inputData = new InputData();
+            //inputData.Horizontal = Input.GetAxisRaw("Horizontal");
+            //inputData.Vertical = Input.GetAxisRaw("Vertical");
+
+            //if (fAttackTimer > fAttackCooldown) {
+            //    if (Input.GetKeyDown(KeyCode.KeypadEnter)) {
+            //        inputData.IsAttacking = true;
+            //        fAttackTime = 0;
+            //    }
+            //}
         }
 
         private void FixedUpdate() {
@@ -30,6 +43,10 @@ namespace ChainedWithMe {
         }
 
         public void SetPosition(Vector3 pos) {
+            if (!objCharController) {
+                objCharController = GetComponent<CharacterController>();
+            }
+
             objCharController.enabled = false;
             this.transform.position = pos;
             objCharController.enabled = true;

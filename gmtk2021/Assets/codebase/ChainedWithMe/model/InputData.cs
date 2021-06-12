@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 namespace ChainedWithMe {
     public struct InputData {
         public float Horizontal { get; set; }
+
         public float Vertical { get; set; }
+
+        public bool IsAttacking { get; set; }
     }
 }

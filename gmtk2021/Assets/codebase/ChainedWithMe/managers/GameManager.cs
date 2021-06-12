@@ -1,3 +1,4 @@
+using MLAPI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,15 +18,16 @@ namespace ChainedWithMe {
         }
 
         public void StartGame() {
-            this.player.SetPosition(level.objSpawn.transform.position);
+            
         }
 
         public void RestartGame() {
             StartGame();
         }
 
-        void Update() {
-
+        public void StartGame(NetworkPlayerComponent netPlayer) {
+            netPlayer.SetPosition(level.objSpawn.transform.position);
         }
+
     }
 }
