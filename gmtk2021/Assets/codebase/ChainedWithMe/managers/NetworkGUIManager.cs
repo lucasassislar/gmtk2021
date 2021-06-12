@@ -21,6 +21,7 @@ namespace ChainedWithMe {
                 GameManager.Instance.StartGame(true);
                 NetworkManager.Singleton.StartServer();
             }
+
         }
 
         static void StatusLabels() {
