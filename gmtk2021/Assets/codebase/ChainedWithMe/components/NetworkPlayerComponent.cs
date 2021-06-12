@@ -43,16 +43,20 @@ namespace ChainedWithMe {
             } else {
                 objCharController.Move(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
 
-                float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
-                if (fDistance > 0.1f) {
-                    //SetPosition(Position.Value);
-                }
+                //float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
+                //if (fDistance > 0.1f) {
+                //    //SetPosition(Position.Value);
+                //}
 
                 Debug.Log(fDistance);
             }
 
             if (IsOwner) {
-                SendDataServerRpc(vInputData.x, vInputData.y, vInputData.z);
+                if (IsServer) {
+                    SendDataClientRpc(vInputData.x, vInputData.y, vInputData.z);
+                } else {
+                    SendDataServerRpc(vInputData.x, vInputData.y, vInputData.z);
+                }
             } else {
                 //objCharController.enabled = false;
                 //objCharController.transform.position = Position.Value;
@@ -75,6 +79,11 @@ namespace ChainedWithMe {
 
         [ServerRpc]
         private void SendDataServerRpc(float fHor, float fVer, float fAttack) {
+            Data.Value = new Vector3(fHor, fVer, fAttack);
+        }
+
+        [ClientRpc]
+        private void SendDataClientRpc(float fHor, float fVer, float fAttack) {
             Data.Value = new Vector3(fHor, fVer, fAttack);
         }
 
