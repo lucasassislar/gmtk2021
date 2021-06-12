@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ChainedWithMe {
-    public class NetworkPlayerComponent : MonoBehaviour {
+    public class NetworkPlayerComponent : NetworkBehaviour {
         public float fSpeed = 1;
 
         public NetworkVariableVector3 Data = new NetworkVariableVector3(new NetworkVariableSettings {
@@ -22,30 +22,32 @@ namespace ChainedWithMe {
             ReadPermission = NetworkVariablePermission.Everyone
         });
 
-        private NetworkObject objNetwork;
-
         private CharacterController objCharController;
 
         private void Start() {
-            objNetwork = GetComponent<NetworkObject>();
-
             objCharController = GetComponentInChildren<CharacterController>();
 
             GameManager.Instance.StartGame(this);
         }
 
         private void FixedUpdate() {
-            if (NetworkManager.Singleton.IsHost) {
+            if (IsServer) {
                 float fGravity = Physics.gravity.y;
 
                 Vector3 vData = Data.Value;
                 objCharController.Move(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
             }
+
+            if (IsServer) {
+                SendPosClientRpc();
+            } else {
+                objCharController.enabled = false;
+                objCharController.transform.position = Position.Value;
+            }
         }
 
-
         private void Update() {
-            if (objNetwork.IsOwner) {
+            if (IsOwner) {
                 float fHor = Input.GetAxisRaw("Horizontal");
                 float fVer = Input.GetAxisRaw("Vertical");
 
@@ -54,27 +56,23 @@ namespace ChainedWithMe {
                     fAttack = 1;
                 }
 
-                SendDataToHost(fHor, fVer, fAttack);
-            }
-
-            if (NetworkManager.Singleton.IsServer) {
-                SendPosToClient();
-            } else {
-                objCharController.enabled = false;
-                this.transform.position = Position.Value;
+                SendDataServerRpc(fHor, fVer, fAttack);
             }
         }
 
         [ServerRpc]
-        private void SendDataToHost(float fHor, float fVer, float fAttack) {
+        private void SendDataServerRpc(float fHor, float fVer, float fAttack) {
             Data.Value = new Vector3(fHor, fVer, fAttack);
-            Data.SetDirty(true);
         }
 
         [ClientRpc]
-        private void SendPosToClient() {
-            Position.Value = transform.position;
-            Position.SetDirty(true);
+        private void SendPosClientRpc() {
+            Position.Value = objCharController.transform.position;
+        }
+
+        [ClientRpc]
+        public void SendClientVersionClientRpc(int nLayerMask) {
+            GameManager.Instance.ReceiveLayer(nLayerMask);
         }
 
         public void SetPosition(Vector3 pos) {

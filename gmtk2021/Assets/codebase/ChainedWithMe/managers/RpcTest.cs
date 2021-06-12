@@ -7,9 +7,7 @@ using MLAPI;
 using MLAPI.Messaging;
 using UnityEngine;
 
-namespace Assets.codebase.ChainedWithMe.managers {
-
-
+namespace ChainedWithMe {
     public class RpcTest : NetworkBehaviour {
         private bool firstTime = true;
 
