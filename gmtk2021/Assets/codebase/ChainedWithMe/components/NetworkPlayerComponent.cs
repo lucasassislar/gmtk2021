@@ -31,6 +31,7 @@ namespace ChainedWithMe {
         }
 
         private Vector3 vInputData;
+        private float fTimer;
 
         private void FixedUpdate() {
             float fGravity = Physics.gravity.y;
@@ -41,10 +42,14 @@ namespace ChainedWithMe {
                 SendPosServerRpc();
             }
 
-            float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
-            if (fDistance > 0.25f) {
-                SetPosition(Position.Value);
+            if (fTimer > 1) {
+                float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
+                if (fDistance > 0.25f) {
+                    fTimer = 0;
+                    SetPosition(Position.Value);
+                }
             }
+            
 
             if (IsOwner) {
                 objCharController.Move(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
@@ -64,6 +69,8 @@ namespace ChainedWithMe {
         }
 
         private void Update() {
+            fTimer += Time.deltaTime;
+
             if (IsOwner) {
                 float fHor = Input.GetAxisRaw("Horizontal");
                 float fVer = Input.GetAxisRaw("Vertical");
