@@ -47,6 +47,8 @@ namespace ChainedWithMe {
                 objCharController.enabled = false;
                 objCharController.transform.position = Position.Value;
             }
+
+            SendDataServerRpc(vInputData.x, vInputData.y, vInputData.z);
         }
 
         private void Update() {
@@ -60,7 +62,6 @@ namespace ChainedWithMe {
                 }
 
                 vInputData = new Vector3(fHor, fVer, fAttack);
-                SendDataServerRpc(fHor, fVer, fAttack);
             }
         }
 
