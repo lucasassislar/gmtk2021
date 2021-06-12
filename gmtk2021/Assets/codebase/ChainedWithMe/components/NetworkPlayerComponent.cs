@@ -107,7 +107,7 @@ namespace ChainedWithMe {
             }
 
             objCharController.enabled = false;
-            this.transform.position = pos;
+            objCharController.transform.position = pos;
             objCharController.enabled = true;
         }
     }
