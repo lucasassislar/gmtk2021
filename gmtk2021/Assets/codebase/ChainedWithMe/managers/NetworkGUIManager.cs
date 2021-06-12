@@ -43,7 +43,14 @@ namespace ChainedWithMe {
         static void SubmitNewPosition() {
             if (GUILayout.Button("Stop")) {
                 GameManager.Instance.End();
-                NetworkManager.Singleton.Shutdown();
+
+                if (NetworkManager.Singleton.IsServer) {
+                    NetworkManager.Singleton.StopServer();
+                }
+
+                if (NetworkManager.Singleton.IsClient) {
+                    NetworkManager.Singleton.StopClient();
+                }
             }
         }
     }

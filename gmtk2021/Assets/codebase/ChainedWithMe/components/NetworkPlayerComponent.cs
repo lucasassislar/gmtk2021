@@ -13,7 +13,6 @@ namespace ChainedWithMe {
         public float fSpeed = 1;
         public float fAttackTime = 0.5f;
 
-        public ListBodyComponent objBodyList;
         public MeshRenderer meshRenderer;
 
         private Vector3 vInputData;
@@ -26,7 +25,6 @@ namespace ChainedWithMe {
         private bool bSetPosition;
 
         private CharacterController objCharController;
-        private BodyComponent inside;
 
         public NetworkVariableVector3 Data = new NetworkVariableVector3(new NetworkVariableSettings {
             WritePermission = NetworkVariablePermission.Everyone,
@@ -57,21 +55,17 @@ namespace ChainedWithMe {
 
             float fGravity = Physics.gravity.y;
 
-            if (inside == null) {
-                if (IsOwner) {
-                    objCharController.SimpleMove(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
-
-                    if (IsServer) {
-                        SendDataClientRpc(vInputData.x, vInputData.y, vInputData.z);
-                    } else {
-                        SendDataServerRpc(vInputData.x, vInputData.y, vInputData.z);
-                    }
-                } else {
-                    Vector3 vData = Data.Value;
-                    objCharController.SimpleMove(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
-                }
+            if (IsServer) {
+                SendDataClientRpc(vInputData.x, vInputData.y, vInputData.z);
             } else {
+                SendDataServerRpc(vInputData.x, vInputData.y, vInputData.z);
+            }
 
+            if (IsOwner) {
+                objCharController.SimpleMove(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
+            } else {
+                Vector3 vData = Data.Value;
+                objCharController.SimpleMove(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
             }
 
             if (IsServer) {
@@ -84,29 +78,21 @@ namespace ChainedWithMe {
         private void RunOnServer() {
             SendPosClientRpc();
 
-            if (inside == null) {
-                Vector3 vData = Data.Value;
-                if (vData.z > 0) {
-                    fAttackTimer = 0;
+            //Vector3 vData = Data.Value;
+            //if (vData.z > 0) {
+            //    fAttackTimer = 0;
 
-                    List<BodyComponent> bodies = objBodyList.bodies;
-                    if (bodies.Count == 0) {
-                        return;
-                    }
+            //    List<BodyComponent> bodies = objBodyList.bodies;
+            //    if (bodies.Count == 0) {
+            //        return;
+            //    }
 
-                    inside = bodies[0];
-                    GameManager.Instance.EnterBody(inside);
+            //    inside = bodies[0];
+            //    GameManager.Instance.EnterBody(inside);
 
-                    inside.EnterClientRpc();
-                    HidePlayer();
-                }
-            } else {
-                //if (fAttackTimer > fAttackTime) {
-                //    if (this == GameManager.Instance.ArmsPlayer) {
-
-                //    }
-                //}
-            }
+            //    inside.EnterClientRpc();
+            //    HidePlayer();
+            //}
         }
 
 
