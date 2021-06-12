@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ChainedWithMe {
-    public class NetworkPlayerComponent : NetworkBehaviour, IRestartable {
+    public class NetworkPlayerComponentOriginal : NetworkBehaviour, IRestartable {
         public float fSpeed = 1;
         public float fAttackTime = 0.5f;
 
-        public ListBodyComponent objBodyList;
+        public ListEnemyComponent objEnemyList;
         public MeshRenderer meshRenderer;
 
         private Vector3 vInputData;
@@ -23,10 +23,8 @@ namespace ChainedWithMe {
         private float fAttack;
 
         private bool bSent;
-        private bool bSetPosition;
 
         private CharacterController objCharController;
-        private BodyComponent inside;
 
         public NetworkVariableVector3 Data = new NetworkVariableVector3(new NetworkVariableSettings {
             WritePermission = NetworkVariablePermission.Everyone,
@@ -55,74 +53,44 @@ namespace ChainedWithMe {
             fAttack -= Time.deltaTime * 10000;
             fAttack = Math.Max(0, fAttack);
 
-            float fGravity = Physics.gravity.y;
-
-            if (inside == null) {
-                if (IsOwner) {
-                    objCharController.SimpleMove(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
-
-                    if (IsServer) {
-                        SendDataClientRpc(vInputData.x, vInputData.y, vInputData.z);
-                    } else {
-                        SendDataServerRpc(vInputData.x, vInputData.y, vInputData.z);
-                    }
-                } else {
-                    Vector3 vData = Data.Value;
-                    objCharController.SimpleMove(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
-                }
-            } else {
-
-            }
+            //if (fTimer > 1) {
+            //    float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
+            //    if (fDistance > 0.25f) {
+            //        fTimer = 0;
+            //        SetPosition(Position.Value);
+            //    }
+            //}
 
             if (IsServer) {
-                RunOnServer();
-            } else {
-                RunOnClient();
-            }
-        }
+                SendPosClientRpc();
 
-        private void RunOnServer() {
-            SendPosClientRpc();
+                if (fAttackTimer > fAttackTime) {
+                    if (this == GameManager.Instance.ArmsPlayer) {
+                        Vector3 vData = Data.Value;
+                        if (vData.z > 0) {
+                            fAttackTimer = 0;
+                            // attack
 
-            if (inside == null) {
-                Vector3 vData = Data.Value;
-                if (vData.z > 0) {
-                    fAttackTimer = 0;
-
-                    List<BodyComponent> bodies = objBodyList.bodies;
-                    if (bodies.Count == 0) {
-                        return;
+                            //for (int i = 0; i < GameManager.Instance.LegsPlayer.objEnemyList.enemies.Count; i++) {
+                            //    GameManager.Instance.LegsPlayer.objEnemyList.enemies[i].DieClientRpc();
+                            //}
+                        }
                     }
+                }
+            }
 
-                    inside = bodies[0];
-                    GameManager.Instance.EnterBody(inside);
+            float fGravity = Physics.gravity.y;
+            if (IsOwner) {
+                objCharController.SimpleMove(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
 
-                    inside.EnterClientRpc();
-                    HidePlayer();
+                if (IsServer) {
+                    SendDataClientRpc(vInputData.x, vInputData.y, vInputData.z);
+                } else {
+                    SendDataServerRpc(vInputData.x, vInputData.y, vInputData.z);
                 }
             } else {
-                //if (fAttackTimer > fAttackTime) {
-                //    if (this == GameManager.Instance.ArmsPlayer) {
-
-                //    }
-                //}
-            }
-        }
-
-
-        private void RunOnClient() {
-            if (bSetPosition) {
-                bSetPosition = false;
-                fTimer = 0;
-                return;
-            }
-
-            if (fTimer > 0.25f) {
-                float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
-                if (fDistance > 0.25f) {
-                    fTimer = 0;
-                    setPosition(Position.Value);
-                }
+                Vector3 vData = Data.Value;
+                objCharController.SimpleMove(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
             }
         }
 
@@ -165,10 +133,6 @@ namespace ChainedWithMe {
 
         [ClientRpc]
         public void HidePlayerClientRpc() {
-            HidePlayer();
-        }
-
-        private void HidePlayer() {
             objCharController.enabled = false;
             meshRenderer.enabled = false;
         }
@@ -178,15 +142,7 @@ namespace ChainedWithMe {
             GameManager.Instance.ReceiveLayer(bIsLegs, nLayerMask);
         }
 
-        private void setPosition(Vector3 pos) {
-            objCharController.enabled = false;
-            objCharController.transform.position = pos;
-            objCharController.enabled = true;
-        }
-
         public void SetPosition(Vector3 pos) {
-            bSetPosition = true;
-
             if (!objCharController) {
                 objCharController = GetComponent<CharacterController>();
             }

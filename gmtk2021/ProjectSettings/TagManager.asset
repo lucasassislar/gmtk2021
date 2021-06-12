@@ -15,9 +15,9 @@ TagManager:
   - Wall
   - Player
   - OuterWall
-  - 
-  - 
-  - 
+  - Ghost
+  - Body
+  - Ground
   - 
   - 
   - 

@@ -16,25 +16,19 @@ namespace ChainedWithMe {
 
         public GameObject objOverlay;
 
-        private int layerMaskB;
-
         private bool bIsHost;
         private bool bIsLegs;
 
         private bool bIsFirst = true;
 
-        public bool IsLegs {
-            get { return bIsLegs; }
-        }
-
-        public int ClientLayerMask {
-            get { return this.layerMaskB; }
-        }
-
         private List<IRestartable> restartables;
 
         public NetworkPlayerComponent LegsPlayer { get; private set; }
         public NetworkPlayerComponent ArmsPlayer { get; private set; }
+
+        public bool IsLegs {
+            get { return bIsLegs; }
+        }
 
         void Start() {
             Instance = this;
@@ -70,7 +64,7 @@ namespace ChainedWithMe {
                 }
             }
 
-            ArmsPlayer.HidePlayerClientRpc();
+            //ArmsPlayer.HidePlayerClientRpc();
         }
 
         public void ReceiveLayer(bool bIsLegs, int nLayerMask) {
@@ -88,20 +82,11 @@ namespace ChainedWithMe {
             this.bIsHost = bIsHost;
 
             if (bIsHost) {
-                objOverlay.SetActive(false);
-
                 bIsLegs = Random.Range(0, 100) > 50;
-
-                if (bIsLegs) {
-                    camera.cullingMask = CameraManager.layerA;
-                    layerMaskB = CameraManager.layerB;
-                } else {
-                    camera.cullingMask = CameraManager.layerB;
-                    layerMaskB = CameraManager.layerA;
-                }
-
-                Debug.Log($"Camera: {camera.cullingMask} Side B: {layerMaskB}");
             }
+
+            camera.cullingMask = CameraManager.layerGhost;
+            objOverlay.SetActive(false);
         }
 
         public void RegisterRestartable(IRestartable restartable) {
@@ -121,6 +106,15 @@ namespace ChainedWithMe {
             }
         }
 
+        public void EnterBody(BodyComponent body) {
+            int totalInside = body.TotalInside.Value;
+
+            if (totalInside == 0) {
+                camera.cullingMask = CameraManager.layerEnemies;
+            } else if (totalInside == 1) {
+                camera.cullingMask = CameraManager.layerWalls;
+            }
+        }
 
         public void StartGame(NetworkPlayerComponent netPlayer) {
             if (bIsHost) {
@@ -130,7 +124,7 @@ namespace ChainedWithMe {
                         LegsPlayer = netPlayer;
                     } else {
                         ArmsPlayer = netPlayer;
-                        ArmsPlayer.HidePlayerClientRpc();
+                        //ArmsPlayer.HidePlayerClientRpc();
                     }
                 }
             }
