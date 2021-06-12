@@ -1,4 +1,7 @@
-﻿using System;
+﻿using MLAPI;
+using MLAPI.Messaging;
+using MLAPI.NetworkVariable;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +9,20 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ChainedWithMe { 
-    public class BodyComponent : MonoBehaviour {
+    public class BodyComponent : NetworkBehaviour {
+        public NetworkVariableInt TotalInside = new NetworkVariableInt(new NetworkVariableSettings {
+            WritePermission = NetworkVariablePermission.Everyone,
+            ReadPermission = NetworkVariablePermission.Everyone
+        });
 
+        [ClientRpc]
+        public void EnterClientRpc() {
+            TotalInside.Value = TotalInside.Value + 1;
+        }
+
+        [ClientRpc]
+        public void ExitClientRpc() {
+            TotalInside.Value = TotalInside.Value - 1;
+        }
     }
 }

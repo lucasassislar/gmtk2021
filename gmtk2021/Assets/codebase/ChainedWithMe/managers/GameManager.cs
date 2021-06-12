@@ -16,8 +16,6 @@ namespace ChainedWithMe {
 
         public GameObject objOverlay;
 
-        private int layerMaskB;
-
         private bool bIsHost;
         private bool bIsLegs;
 
@@ -30,10 +28,6 @@ namespace ChainedWithMe {
 
         public bool IsLegs {
             get { return bIsLegs; }
-        }
-
-        public int ClientLayerMask {
-            get { return this.layerMaskB; }
         }
 
         void Start() {
@@ -88,20 +82,11 @@ namespace ChainedWithMe {
             this.bIsHost = bIsHost;
 
             if (bIsHost) {
-                objOverlay.SetActive(false);
-
                 bIsLegs = Random.Range(0, 100) > 50;
-
-                if (bIsLegs) {
-                    camera.cullingMask = CameraManager.layerA;
-                    layerMaskB = CameraManager.layerB;
-                } else {
-                    camera.cullingMask = CameraManager.layerB;
-                    layerMaskB = CameraManager.layerA;
-                }
-
-                Debug.Log($"Camera: {camera.cullingMask} Side B: {layerMaskB}");
             }
+
+            camera.cullingMask = CameraManager.layerGhost;
+            objOverlay.SetActive(false);
         }
 
         public void RegisterRestartable(IRestartable restartable) {
@@ -121,6 +106,15 @@ namespace ChainedWithMe {
             }
         }
 
+        public void EnterBody(BodyComponent body) {
+            int totalInside = body.TotalInside.Value;
+
+            if (totalInside == 0) {
+                camera.cullingMask = CameraManager.layerEnemies;
+            } else if (totalInside == 1) {
+                camera.cullingMask = CameraManager.layerWalls;
+            }
+        }
 
         public void StartGame(NetworkPlayerComponent netPlayer) {
             if (bIsHost) {

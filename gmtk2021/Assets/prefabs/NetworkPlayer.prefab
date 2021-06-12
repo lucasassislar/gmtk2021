@@ -122,7 +122,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fSpeed: 1200
   fAttackTime: 0.5
-  objBodyList: {fileID: 0}
+  objBodyList: {fileID: 971902252}
   meshRenderer: {fileID: 1711813855944873424}
   Data:
     m_InternalValue: {x: 0, y: 0, z: 0}

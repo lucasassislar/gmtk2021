@@ -111,8 +111,8 @@ namespace ChainedWithMe {
             if (!bSent) {
                 bSent = true;
 
-                GameManager gameManager = GameManager.Instance;
-                SendClientVersionClientRpc(gameManager.IsLegs, gameManager.ClientLayerMask);
+                //GameManager gameManager = GameManager.Instance;
+                //SendClientVersionClientRpc(gameManager.IsLegs, gameManager.ClientLayerMask);
             }
         }
 

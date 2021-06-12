@@ -26,6 +26,7 @@ namespace ChainedWithMe {
         private bool bSetPosition;
 
         private CharacterController objCharController;
+        private BodyComponent inside;
 
         public NetworkVariableVector3 Data = new NetworkVariableVector3(new NetworkVariableSettings {
             WritePermission = NetworkVariablePermission.Everyone,
@@ -55,17 +56,22 @@ namespace ChainedWithMe {
             fAttack = Math.Max(0, fAttack);
 
             float fGravity = Physics.gravity.y;
-            if (IsOwner) {
-                objCharController.SimpleMove(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
 
-                if (IsServer) {
-                    SendDataClientRpc(vInputData.x, vInputData.y, vInputData.z);
+            if (inside == null) {
+                if (IsOwner) {
+                    objCharController.SimpleMove(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
+
+                    if (IsServer) {
+                        SendDataClientRpc(vInputData.x, vInputData.y, vInputData.z);
+                    } else {
+                        SendDataServerRpc(vInputData.x, vInputData.y, vInputData.z);
+                    }
                 } else {
-                    SendDataServerRpc(vInputData.x, vInputData.y, vInputData.z);
+                    Vector3 vData = Data.Value;
+                    objCharController.SimpleMove(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
                 }
             } else {
-                Vector3 vData = Data.Value;
-                objCharController.SimpleMove(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
+
             }
 
             if (IsServer) {
@@ -78,20 +84,31 @@ namespace ChainedWithMe {
         private void RunOnServer() {
             SendPosClientRpc();
 
-            //if (fAttackTimer > fAttackTime) {
-            //    if (this == GameManager.Instance.ArmsPlayer) {
-            //        Vector3 vData = Data.Value;
-            //        if (vData.z > 0) {
-            //            fAttackTimer = 0;
-            //            // attack
+            if (inside == null) {
+                Vector3 vData = Data.Value;
+                if (vData.z > 0) {
+                    fAttackTimer = 0;
 
-            //            //for (int i = 0; i < GameManager.Instance.LegsPlayer.objEnemyList.enemies.Count; i++) {
-            //            //    GameManager.Instance.LegsPlayer.objEnemyList.enemies[i].DieClientRpc();
-            //            //}
-            //        }
-            //    }
-            //}
+                    List<BodyComponent> bodies = objBodyList.bodies;
+                    if (bodies.Count == 0) {
+                        return;
+                    }
+
+                    inside = bodies[0];
+                    GameManager.Instance.EnterBody(inside);
+
+                    inside.EnterClientRpc();
+                    HidePlayer();
+                }
+            } else {
+                //if (fAttackTimer > fAttackTime) {
+                //    if (this == GameManager.Instance.ArmsPlayer) {
+
+                //    }
+                //}
+            }
         }
+
 
         private void RunOnClient() {
             if (bSetPosition) {
@@ -126,8 +143,8 @@ namespace ChainedWithMe {
             if (!bSent) {
                 bSent = true;
 
-                GameManager gameManager = GameManager.Instance;
-                SendClientVersionClientRpc(gameManager.IsLegs, gameManager.ClientLayerMask);
+                //GameManager gameManager = GameManager.Instance;
+                //SendClientVersionClientRpc(gameManager.IsLegs, gameManager.ClientLayerMask);
             }
         }
 
@@ -148,6 +165,10 @@ namespace ChainedWithMe {
 
         [ClientRpc]
         public void HidePlayerClientRpc() {
+            HidePlayer();
+        }
+
+        private void HidePlayer() {
             objCharController.enabled = false;
             meshRenderer.enabled = false;
         }
