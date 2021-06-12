@@ -13,12 +13,12 @@ namespace ChainedWithMe {
         public float fSpeed = 1;
 
         public NetworkVariableVector3 Data = new NetworkVariableVector3(new NetworkVariableSettings {
-            WritePermission = NetworkVariablePermission.OwnerOnly,
+            WritePermission = NetworkVariablePermission.Everyone,
             ReadPermission = NetworkVariablePermission.Everyone
         });
 
         public NetworkVariableVector3 Position = new NetworkVariableVector3(new NetworkVariableSettings {
-            WritePermission = NetworkVariablePermission.ServerOnly,
+            WritePermission = NetworkVariablePermission.Everyone,
             ReadPermission = NetworkVariablePermission.Everyone
         });
 
