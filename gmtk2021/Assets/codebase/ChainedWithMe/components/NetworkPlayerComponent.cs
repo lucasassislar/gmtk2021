@@ -35,29 +35,31 @@ namespace ChainedWithMe {
         private void FixedUpdate() {
             float fGravity = Physics.gravity.y;
 
-            if (IsServer) {
-                Vector3 vData = Data.Value;
-                objCharController.Move(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
+            //if (IsServer) {
+            //    SendPosClientRpc();
+            //} else {
+            //    SendPosServerRpc();
 
-                SendPosClientRpc();
-            } else {
-                objCharController.Move(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
+            //    //float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
+            //    //if (fDistance > 0.1f) {
+            //    //    //SetPosition(Position.Value);
+            //    //}
 
-                //float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
-                //if (fDistance > 0.1f) {
-                //    //SetPosition(Position.Value);
-                //}
-
-                //Debug.Log(fDistance);
-            }
+            //    //Debug.Log(fDistance);
+            //}
 
             if (IsOwner) {
+                objCharController.Move(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
+
                 if (IsServer) {
                     SendDataClientRpc(vInputData.x, vInputData.y, vInputData.z);
                 } else {
                     SendDataServerRpc(vInputData.x, vInputData.y, vInputData.z);
                 }
             } else {
+                Vector3 vData = Data.Value;
+                objCharController.Move(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
+
                 //objCharController.enabled = false;
                 //objCharController.transform.position = Position.Value;
             }
@@ -89,6 +91,11 @@ namespace ChainedWithMe {
 
         [ClientRpc]
         private void SendPosClientRpc() {
+            Position.Value = objCharController.transform.position;
+        }
+
+        [ServerRpc]
+        private void SendPosServerRpc() {
             Position.Value = objCharController.transform.position;
         }
 
