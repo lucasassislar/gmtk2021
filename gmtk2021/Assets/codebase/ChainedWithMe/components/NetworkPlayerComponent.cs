@@ -23,6 +23,7 @@ namespace ChainedWithMe {
         private float fAttack;
 
         private bool bSent;
+        private bool bSetPosition;
 
         private CharacterController objCharController;
 
@@ -53,30 +54,11 @@ namespace ChainedWithMe {
             fAttack -= Time.deltaTime * 10000;
             fAttack = Math.Max(0, fAttack);
 
-            //if (fTimer > 1) {
-            //    float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
-            //    if (fDistance > 0.25f) {
-            //        fTimer = 0;
-            //        SetPosition(Position.Value);
-            //    }
-            //}
 
             if (IsServer) {
-                SendPosClientRpc();
-
-                if (fAttackTimer > fAttackTime) {
-                    if (this == GameManager.Instance.ArmsPlayer) {
-                        Vector3 vData = Data.Value;
-                        if (vData.z > 0) {
-                            fAttackTimer = 0;
-                            // attack
-
-                            //for (int i = 0; i < GameManager.Instance.LegsPlayer.objEnemyList.enemies.Count; i++) {
-                            //    GameManager.Instance.LegsPlayer.objEnemyList.enemies[i].DieClientRpc();
-                            //}
-                        }
-                    }
-                }
+                RunOnServer();
+            } else {
+                RunOnClient();
             }
 
             float fGravity = Physics.gravity.y;
@@ -91,6 +73,40 @@ namespace ChainedWithMe {
             } else {
                 Vector3 vData = Data.Value;
                 objCharController.SimpleMove(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
+            }
+        }
+
+        private void RunOnServer() {
+            SendPosClientRpc();
+
+            if (fAttackTimer > fAttackTime) {
+                if (this == GameManager.Instance.ArmsPlayer) {
+                    Vector3 vData = Data.Value;
+                    if (vData.z > 0) {
+                        fAttackTimer = 0;
+                        // attack
+
+                        //for (int i = 0; i < GameManager.Instance.LegsPlayer.objEnemyList.enemies.Count; i++) {
+                        //    GameManager.Instance.LegsPlayer.objEnemyList.enemies[i].DieClientRpc();
+                        //}
+                    }
+                }
+            }
+        }
+
+        private void RunOnClient() {
+            if (bSetPosition) {
+                bSetPosition = false;
+                fTimer = 0;
+                return;
+            }
+
+            if (fTimer > 0.25f) {
+                float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
+                if (fDistance > 0.25f) {
+                    fTimer = 0;
+                    setPosition(Position.Value);
+                }
             }
         }
 
@@ -142,7 +158,15 @@ namespace ChainedWithMe {
             GameManager.Instance.ReceiveLayer(bIsLegs, nLayerMask);
         }
 
+        private void setPosition(Vector3 pos) {
+            objCharController.enabled = false;
+            objCharController.transform.position = pos;
+            objCharController.enabled = true;
+        }
+
         public void SetPosition(Vector3 pos) {
+            bSetPosition = true;
+
             if (!objCharController) {
                 objCharController = GetComponent<CharacterController>();
             }
