@@ -30,12 +30,15 @@ namespace ChainedWithMe {
             GameManager.Instance.StartGame(this);
         }
 
-        private void FixedUpdate() {
-            if (IsServer) {
-                float fGravity = Physics.gravity.y;
+        private Vector3 vInputData;
 
+        private void FixedUpdate() {
+            float fGravity = Physics.gravity.y;
+
+            if (IsServer) {
                 Vector3 vData = Data.Value;
                 objCharController.Move(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
+            } else {
             }
 
             if (IsServer) {
@@ -56,6 +59,7 @@ namespace ChainedWithMe {
                     fAttack = 1;
                 }
 
+                vInputData = new Vector3(fHor, fVer, fAttack);
                 SendDataServerRpc(fHor, fVer, fAttack);
             }
         }
