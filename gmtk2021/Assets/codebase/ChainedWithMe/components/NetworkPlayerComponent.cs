@@ -35,18 +35,16 @@ namespace ChainedWithMe {
         private void FixedUpdate() {
             float fGravity = Physics.gravity.y;
 
-            //if (IsServer) {
-            //    SendPosClientRpc();
-            //} else {
-            //    SendPosServerRpc();
+            if (IsServer) {
+                SendPosClientRpc();
+            } else {
+                SendPosServerRpc();
+            }
 
-            //    //float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
-            //    //if (fDistance > 0.1f) {
-            //    //    //SetPosition(Position.Value);
-            //    //}
-
-            //    //Debug.Log(fDistance);
-            //}
+            float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
+            if (fDistance > 0.25f) {
+                SetPosition(Position.Value);
+            }
 
             if (IsOwner) {
                 objCharController.Move(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
