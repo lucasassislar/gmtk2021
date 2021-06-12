@@ -47,7 +47,7 @@ namespace ChainedWithMe {
 
         static void SubmitNewPosition() {
             if (GUILayout.Button("Stop")) {
-                GameManager.Instance.Restart();
+                GameManager.Instance.End();
                 NetworkManager.Singleton.Shutdown();
             }
         }

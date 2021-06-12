@@ -21,6 +21,8 @@ namespace ChainedWithMe {
         private bool bIsHost;
         private bool bIsLegs;
 
+        private bool bIsFirst = true;
+
         public bool IsLegs {
             get { return bIsLegs; }
         }
@@ -28,6 +30,8 @@ namespace ChainedWithMe {
         public int ClientLayerMask {
             get { return this.layerMaskB; }
         }
+
+        private List<IRestartable> restartables;
 
         public NetworkPlayerComponent LegsPlayer { get; private set; }
         public NetworkPlayerComponent ArmsPlayer { get; private set; }
@@ -37,6 +41,8 @@ namespace ChainedWithMe {
             CameraManager = GetComponent<CameraManager>();
 
             objOverlay.SetActive(true);
+
+            restartables = new List<IRestartable>();
 
             NetworkManager.Singleton.OnClientConnectedCallback += Singleton_OnClientConnectedCallback;
         }
@@ -98,12 +104,23 @@ namespace ChainedWithMe {
             }
         }
 
-        public void Restart() {
-            objOverlay.SetActive(true);
-            bIsFirst = true;
+        public void RegisterRestartable(IRestartable restartable) {
+            restartables.Add(restartable);
         }
 
-        private bool bIsFirst = true;
+        public void End() {
+            objOverlay.SetActive(true);
+            Restart();
+        }
+
+        public void Restart() {
+            bIsFirst = true;
+
+            for (int i = 0; i < restartables.Count; i++) {
+                restartables[i].Restart();
+            }
+        }
+
 
         public void StartGame(NetworkPlayerComponent netPlayer) {
             if (bIsHost) {

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ChainedWithMe {
-    public class NetworkPlayerComponent : NetworkBehaviour {
+    public class NetworkPlayerComponent : NetworkBehaviour, IRestartable {
         public float fSpeed = 1;
         public float fAttackTime = 0.5f;
 
@@ -24,6 +24,8 @@ namespace ChainedWithMe {
 
         private bool bSent;
 
+        private CharacterController objCharController;
+
         public NetworkVariableVector3 Data = new NetworkVariableVector3(new NetworkVariableSettings {
             WritePermission = NetworkVariablePermission.Everyone,
             ReadPermission = NetworkVariablePermission.Everyone
@@ -34,11 +36,15 @@ namespace ChainedWithMe {
             ReadPermission = NetworkVariablePermission.Everyone
         });
 
-        private CharacterController objCharController;
-
         private void Start() {
             objCharController = GetComponentInChildren<CharacterController>();
 
+            GameManager.Instance.StartGame(this);
+
+            GameManager.Instance.RegisterRestartable(this);
+        }
+
+        public void Restart() {
             GameManager.Instance.StartGame(this);
         }
 
