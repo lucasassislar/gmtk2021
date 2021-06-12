@@ -15,6 +15,7 @@ namespace ChainedWithMe {
         public Camera camera;
 
         public GameObject objOverlay;
+        public GameObject objKillBox;
 
         private bool bIsHost;
         private bool bIsEthereal;
@@ -39,6 +40,15 @@ namespace ChainedWithMe {
             restartables = new List<IRestartable>();
 
             NetworkManager.Singleton.OnClientConnectedCallback += Singleton_OnClientConnectedCallback;
+        }
+
+        private void Update() {
+            if (RealPlayer != null) {
+                if (RealPlayer.CharController.transform.position.y < objKillBox.transform.position.y) {
+                    // death
+                    Restart();
+                }
+            }
         }
 
         private void Singleton_OnClientConnectedCallback(ulong obj) {

@@ -24,7 +24,7 @@ namespace ChainedWithMe {
         private bool bSent;
         private bool bSetPosition;
 
-        private CharacterController objCharController;
+        public CharacterController CharController { get; private set; }
 
         public NetworkVariableVector3 Data = new NetworkVariableVector3(new NetworkVariableSettings {
             WritePermission = NetworkVariablePermission.Everyone,
@@ -37,7 +37,7 @@ namespace ChainedWithMe {
         });
 
         private void Start() {
-            objCharController = GetComponentInChildren<CharacterController>();
+            CharController = GetComponentInChildren<CharacterController>();
 
             GameManager.Instance.StartGame(this);
 
@@ -62,10 +62,10 @@ namespace ChainedWithMe {
             }
 
             if (IsOwner) {
-                objCharController.SimpleMove(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
+                CharController.SimpleMove(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
             } else {
                 Vector3 vData = Data.Value;
-                objCharController.SimpleMove(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
+                CharController.SimpleMove(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
             }
 
             if (IsServer) {
@@ -104,7 +104,7 @@ namespace ChainedWithMe {
             }
 
             if (fTimer > 0.25f) {
-                float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
+                float fDistance = Vector3.Distance(CharController.transform.position, Position.Value);
                 if (fDistance > 0.25f) {
                     fTimer = 0;
                     setPosition(Position.Value);
@@ -146,7 +146,7 @@ namespace ChainedWithMe {
 
         [ClientRpc]
         private void SendPosClientRpc() {
-            Position.Value = objCharController.transform.position;
+            Position.Value = CharController.transform.position;
         }
 
         [ClientRpc]
@@ -155,7 +155,7 @@ namespace ChainedWithMe {
         }
 
         private void HidePlayer() {
-            objCharController.enabled = false;
+            CharController.enabled = false;
             meshRenderer.enabled = false;
         }
 
@@ -165,21 +165,21 @@ namespace ChainedWithMe {
         }
 
         private void setPosition(Vector3 pos) {
-            objCharController.enabled = false;
-            objCharController.transform.position = pos;
-            objCharController.enabled = true;
+            CharController.enabled = false;
+            CharController.transform.position = pos;
+            CharController.enabled = true;
         }
 
         public void SetPosition(Vector3 pos) {
             bSetPosition = true;
 
-            if (!objCharController) {
-                objCharController = GetComponent<CharacterController>();
+            if (!CharController) {
+                CharController = GetComponent<CharacterController>();
             }
 
-            objCharController.enabled = false;
-            objCharController.transform.position = pos;
-            objCharController.enabled = true;
+            CharController.enabled = false;
+            CharController.transform.position = pos;
+            CharController.enabled = true;
         }
     }
 }
