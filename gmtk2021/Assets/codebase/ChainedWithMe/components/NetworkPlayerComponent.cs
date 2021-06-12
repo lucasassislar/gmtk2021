@@ -38,26 +38,24 @@ namespace ChainedWithMe {
             if (IsServer) {
                 Vector3 vData = Data.Value;
                 objCharController.Move(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
-            } else {
-                objCharController.Move(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
-            }
 
-            if (IsServer) {
                 SendPosClientRpc();
             } else {
+                objCharController.Move(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
+
                 float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
                 if (fDistance > 0.1f) {
-                    SetPosition(Position.Value);
+                    //SetPosition(Position.Value);
                 }
 
                 Debug.Log(fDistance);
-
-                //objCharController.enabled = false;
-                //objCharController.transform.position = Position.Value;
             }
 
             if (IsOwner) {
                 SendDataServerRpc(vInputData.x, vInputData.y, vInputData.z);
+            } else {
+                //objCharController.enabled = false;
+                //objCharController.transform.position = Position.Value;
             }
         }
 
