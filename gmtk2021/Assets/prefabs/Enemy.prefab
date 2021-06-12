@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4022075377141759076}
   - component: {fileID: 2310590284276917898}
   - component: {fileID: 7581576018148350302}
+  - component: {fileID: 2734808515260163885}
   m_Layer: 6
   m_Name: Enemy
   m_TagString: Untagged
@@ -29,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 3229560658472115633}
   m_LocalRotation: {x: -0.67393106, y: -0.21404898, z: -0.21404898, w: 0.67393106}
   m_LocalPosition: {x: -33.8, y: 0.0058106, z: -74.8}
-  m_LocalScale: {x: 3.75, y: 3.75, z: 3.75}
+  m_LocalScale: {x: 3.7499995, y: 3.75, z: 3.75}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -108,3 +109,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3178a9cb64ded684290b006746192adf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2734808515260163885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3229560658472115633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NetworkInstanceId: 0
+  PrefabHash: 7042126347811011599
+  PrefabHashGenerator: Enemy
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0

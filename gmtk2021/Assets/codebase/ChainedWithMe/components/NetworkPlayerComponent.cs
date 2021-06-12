@@ -11,6 +11,18 @@ using UnityEngine;
 namespace ChainedWithMe {
     public class NetworkPlayerComponent : NetworkBehaviour {
         public float fSpeed = 1;
+        public float fAttackTime = 0.5f;
+
+        public ListEnemyComponent objEnemyList;
+        public MeshRenderer meshRenderer;
+
+        private Vector3 vInputData;
+        private float fTimer;
+
+        private float fAttackTimer;
+        private float fAttack;
+
+        private bool bSent;
 
         public NetworkVariableVector3 Data = new NetworkVariableVector3(new NetworkVariableSettings {
             WritePermission = NetworkVariablePermission.Everyone,
@@ -30,20 +42,11 @@ namespace ChainedWithMe {
             GameManager.Instance.StartGame(this);
         }
 
-        private Vector3 vInputData;
-        private float fTimer;
-
-        private int clientLayer;
-        private bool bIsLegs;
-
-        private bool bSent;
-
-        public void SetClientLayer(bool bIsLegs, int layer) {
-            this.bIsLegs = bIsLegs;
-            clientLayer = layer;
-        }
-
         private void FixedUpdate() {
+            fAttackTimer += Time.deltaTime;
+            fAttack -= Time.deltaTime * 10000;
+            fAttack = Math.Max(0, fAttack);
+
             if (fTimer > 1) {
                 float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
                 if (fDistance > 0.25f) {
@@ -54,6 +57,20 @@ namespace ChainedWithMe {
 
             if (IsServer) {
                 SendPosClientRpc();
+
+                if (fAttackTimer > fAttackTime) {
+                    if (this == GameManager.Instance.ArmsPlayer) {
+                        Vector3 vData = Data.Value;
+                        if (vData.z > 0) {
+                            fAttackTimer = 0;
+                            // attack
+
+                            for (int i = 0; i < GameManager.Instance.LegsPlayer.objEnemyList.enemies.Count; i++) {
+                                GameManager.Instance.LegsPlayer.objEnemyList.enemies[i].DieClientRpc();
+                            }
+                        }
+                    }
+                }
             }
 
             float fGravity = Physics.gravity.y;
@@ -78,9 +95,8 @@ namespace ChainedWithMe {
                 float fHor = Input.GetAxisRaw("Horizontal");
                 float fVer = Input.GetAxisRaw("Vertical");
 
-                float fAttack = 0;
-                if (Input.GetKeyDown(KeyCode.KeypadEnter)) {
-                    fAttack = 1;
+                if (Input.GetKeyDown(KeyCode.Return)) {
+                    fAttack = 0.05f * 10000;
                 }
 
                 vInputData = new Vector3(fHor, fVer, fAttack);
@@ -88,7 +104,9 @@ namespace ChainedWithMe {
 
             if (!bSent) {
                 bSent = true;
-                SendClientVersionClientRpc(bIsLegs, this.clientLayer);
+
+                GameManager gameManager = GameManager.Instance;
+                SendClientVersionClientRpc(gameManager.IsLegs, gameManager.ClientLayerMask);
             }
         }
 
@@ -109,7 +127,8 @@ namespace ChainedWithMe {
 
         [ClientRpc]
         public void HidePlayerClientRpc() {
-            objCharController.gameObject.SetActive(false);
+            objCharController.enabled = false;
+            meshRenderer.enabled = false;
         }
 
         [ClientRpc]

@@ -21,6 +21,17 @@ namespace ChainedWithMe {
         private bool bIsHost;
         private bool bIsLegs;
 
+        public bool IsLegs {
+            get { return bIsLegs; }
+        }
+
+        public int ClientLayerMask {
+            get { return this.layerMaskB; }
+        }
+
+        public NetworkPlayerComponent LegsPlayer { get; private set; }
+        public NetworkPlayerComponent ArmsPlayer { get; private set; }
+
         void Start() {
             Instance = this;
             CameraManager = GetComponent<CameraManager>();
@@ -31,21 +42,29 @@ namespace ChainedWithMe {
         }
 
         private void Singleton_OnClientConnectedCallback(ulong obj) {
+            if (!bIsHost) {
+                return;
+            }
+
             NetworkClient client = NetworkManager.Singleton.ConnectedClients[obj];
 
-            if (this.bIsLegs) {
-                NetworkPlayerComponent netPlayer = client.PlayerObject.GetComponent<NetworkPlayerComponent>();
-                netPlayer.HidePlayerClientRpc();
+            if (bIsLegs) {
+                ArmsPlayer = client.PlayerObject.GetComponent<NetworkPlayerComponent>();
             } else {
+                LegsPlayer = client.PlayerObject.GetComponent<NetworkPlayerComponent>();
+
                 for (int i = 0; i < NetworkManager.Singleton.ConnectedClientsList.Count; i++) {
                     NetworkClient objClient = NetworkManager.Singleton.ConnectedClientsList[i];
-                    if (client  == objClient) {
+                    if (client == objClient) {
                         continue;
                     }
-                    NetworkPlayerComponent netPlayer = client.PlayerObject.GetComponent<NetworkPlayerComponent>();
-                    netPlayer.HidePlayerClientRpc();
+
+                    ArmsPlayer = objClient.PlayerObject.GetComponent<NetworkPlayerComponent>();
+                    break;
                 }
             }
+
+            ArmsPlayer.HidePlayerClientRpc();
         }
 
         public void ReceiveLayer(bool bIsLegs, int nLayerMask) {
@@ -81,10 +100,24 @@ namespace ChainedWithMe {
 
         public void Restart() {
             objOverlay.SetActive(true);
+            bIsFirst = true;
         }
 
+        private bool bIsFirst = true;
+
         public void StartGame(NetworkPlayerComponent netPlayer) {
-            netPlayer.SetClientLayer(!bIsLegs, layerMaskB);
+            if (bIsHost) {
+                if (bIsFirst) {
+                    bIsFirst = false;
+                    if (bIsLegs) {
+                        LegsPlayer = netPlayer;
+                    } else {
+                        ArmsPlayer = netPlayer;
+                        ArmsPlayer.HidePlayerClientRpc();
+                    }
+                }
+            }
+
             netPlayer.SetPosition(level.objSpawn.transform.position);
         }
 

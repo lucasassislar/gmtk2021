@@ -10,20 +10,20 @@ namespace ChainedWithMe {
         public List<EnemyComponent> enemies;
 
         private void OnTriggerEnter(Collider other) {
-            EnemyComponent enemyComp = other.GetComponent<EnemyComponent>();
-            if (enemyComp == null) {
+            if (other.gameObject.layer != LayerMask.NameToLayer("Enemy")) {
                 return;
             }
 
+            EnemyComponent enemyComp = other.GetComponent<EnemyComponent>();
             enemies.Add(enemyComp);
         }
 
         private void OnTriggerExit(Collider other) {
-            EnemyComponent enemyComp = other.GetComponent<EnemyComponent>();
-            if (enemyComp == null) {
+            if (other.gameObject.layer != LayerMask.NameToLayer("Enemy")) {
                 return;
             }
 
+            EnemyComponent enemyComp = other.GetComponent<EnemyComponent>();
             enemies.Remove(enemyComp);
         }
     }
