@@ -65,17 +65,17 @@ namespace ChainedWithMe {
                 SendPosClientRpc();
 
                 if (fAttackTimer > fAttackTime) {
-                    if (this == GameManager.Instance.ArmsPlayer) {
-                        Vector3 vData = Data.Value;
-                        if (vData.z > 0) {
-                            fAttackTimer = 0;
-                            // attack
+                    //if (this == GameManager.Instance.ArmsPlayer) {
+                    //    Vector3 vData = Data.Value;
+                    //    if (vData.z > 0) {
+                    //        fAttackTimer = 0;
+                    //        // attack
 
-                            //for (int i = 0; i < GameManager.Instance.LegsPlayer.objEnemyList.enemies.Count; i++) {
-                            //    GameManager.Instance.LegsPlayer.objEnemyList.enemies[i].DieClientRpc();
-                            //}
-                        }
-                    }
+                    //        //for (int i = 0; i < GameManager.Instance.LegsPlayer.objEnemyList.enemies.Count; i++) {
+                    //        //    GameManager.Instance.LegsPlayer.objEnemyList.enemies[i].DieClientRpc();
+                    //        //}
+                    //    }
+                    //}
                 }
             }
 

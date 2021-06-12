@@ -7,9 +7,7 @@ using UnityEngine;
 
 namespace ChainedWithMe {
     public class CameraManager : MonoBehaviour {
-        public LayerMask layerEnemies;
-        public LayerMask layerWalls;
-
-        public LayerMask layerGhost;
+        public LayerMask layerEthereal;
+        public LayerMask layerReal;
     }
 }

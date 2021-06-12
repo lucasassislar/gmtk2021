@@ -17,17 +17,17 @@ namespace ChainedWithMe {
         public GameObject objOverlay;
 
         private bool bIsHost;
-        private bool bIsLegs;
+        private bool bIsEthereal;
 
         private bool bIsFirst = true;
 
         private List<IRestartable> restartables;
 
-        public NetworkPlayerComponent LegsPlayer { get; private set; }
-        public NetworkPlayerComponent ArmsPlayer { get; private set; }
+        public NetworkPlayerComponent RealPlayer { get; private set; }
+        public NetworkPlayerComponent EtherealPlayer { get; private set; }
 
-        public bool IsLegs {
-            get { return bIsLegs; }
+        public bool IsEthereal {
+            get { return bIsEthereal; }
         }
 
         void Start() {
@@ -48,10 +48,10 @@ namespace ChainedWithMe {
 
             NetworkClient client = NetworkManager.Singleton.ConnectedClients[obj];
 
-            if (bIsLegs) {
-                ArmsPlayer = client.PlayerObject.GetComponent<NetworkPlayerComponent>();
+            if (bIsEthereal) {
+                RealPlayer = client.PlayerObject.GetComponent<NetworkPlayerComponent>();
             } else {
-                LegsPlayer = client.PlayerObject.GetComponent<NetworkPlayerComponent>();
+                EtherealPlayer = client.PlayerObject.GetComponent<NetworkPlayerComponent>();
 
                 for (int i = 0; i < NetworkManager.Singleton.ConnectedClientsList.Count; i++) {
                     NetworkClient objClient = NetworkManager.Singleton.ConnectedClientsList[i];
@@ -59,21 +59,21 @@ namespace ChainedWithMe {
                         continue;
                     }
 
-                    ArmsPlayer = objClient.PlayerObject.GetComponent<NetworkPlayerComponent>();
+                    RealPlayer = objClient.PlayerObject.GetComponent<NetworkPlayerComponent>();
                     break;
                 }
             }
 
-            //ArmsPlayer.HidePlayerClientRpc();
+            EtherealPlayer.HidePlayerClientRpc();
         }
 
-        public void ReceiveLayer(bool bIsLegs, int nLayerMask) {
+        public void ReceiveLayer(bool bIsEthereal, int nLayerMask) {
             if (bIsHost) {
                 return;
             }
 
             camera.cullingMask = nLayerMask;
-            this.bIsLegs = bIsLegs;
+            this.bIsEthereal = bIsEthereal;
 
             objOverlay.SetActive(false);
         }
@@ -82,11 +82,17 @@ namespace ChainedWithMe {
             this.bIsHost = bIsHost;
 
             if (bIsHost) {
-                bIsLegs = Random.Range(0, 100) > 50;
-            }
+                bIsEthereal = Random.Range(0, 100) > 50;
+                bIsEthereal = false;
 
-            camera.cullingMask = CameraManager.layerGhost;
-            objOverlay.SetActive(false);
+                objOverlay.SetActive(false);
+
+                if (bIsEthereal) {
+                    camera.cullingMask = CameraManager.layerEthereal;
+                } else {
+                    camera.cullingMask = CameraManager.layerReal;
+                }
+            }
         }
 
         public void RegisterRestartable(IRestartable restartable) {
@@ -106,25 +112,19 @@ namespace ChainedWithMe {
             }
         }
 
-        public void EnterBody(BodyComponent body) {
-            int totalInside = body.TotalInside.Value;
-
-            if (totalInside == 0) {
-                camera.cullingMask = CameraManager.layerEnemies;
-            } else if (totalInside == 1) {
-                camera.cullingMask = CameraManager.layerWalls;
-            }
+        private void OnGUI() {
+            GUILayout.Label("Ethereal: " + bIsEthereal);
         }
 
         public void StartGame(NetworkPlayerComponent netPlayer) {
             if (bIsHost) {
                 if (bIsFirst) {
                     bIsFirst = false;
-                    if (bIsLegs) {
-                        LegsPlayer = netPlayer;
+                    if (bIsEthereal) {
+                        EtherealPlayer = netPlayer;
+                        EtherealPlayer.HidePlayerClientRpc();
                     } else {
-                        ArmsPlayer = netPlayer;
-                        //ArmsPlayer.HidePlayerClientRpc();
+                        RealPlayer = netPlayer;
                     }
                 }
             }
