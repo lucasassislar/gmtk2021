@@ -33,9 +33,12 @@ namespace ChainedWithMe {
         private Vector3 vInputData;
         private float fTimer;
 
-        private void FixedUpdate() {
-            float fGravity = Physics.gravity.y;
+        private int clientLayer;
+        public void SetClientLayer(int layer) {
+            clientLayer = layer;
+        }
 
+        private void FixedUpdate() {
             if (fTimer > 1) {
                 float fDistance = Vector3.Distance(objCharController.transform.position, Position.Value);
                 if (fDistance > 0.25f) {
@@ -48,6 +51,7 @@ namespace ChainedWithMe {
                 SendPosClientRpc();
             }
 
+            float fGravity = Physics.gravity.y;
             if (IsOwner) {
                 objCharController.SimpleMove(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
 
@@ -59,11 +63,10 @@ namespace ChainedWithMe {
             } else {
                 Vector3 vData = Data.Value;
                 objCharController.SimpleMove(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
-
-                //objCharController.enabled = false;
-                //objCharController.transform.position = Position.Value;
             }
         }
+
+        private bool bSent;
 
         private void Update() {
             fTimer += Time.deltaTime;
@@ -78,6 +81,11 @@ namespace ChainedWithMe {
                 }
 
                 vInputData = new Vector3(fHor, fVer, fAttack);
+            }
+
+            if (!bSent) {
+                bSent = true;
+                SendClientVersionClientRpc(this.clientLayer);
             }
         }
 
@@ -98,6 +106,7 @@ namespace ChainedWithMe {
 
         [ClientRpc]
         public void SendClientVersionClientRpc(int nLayerMask) {
+            Debug.Log($"nLayerMask: {nLayerMask}");
             GameManager.Instance.ReceiveLayer(nLayerMask);
         }
 
