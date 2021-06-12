@@ -48,7 +48,9 @@ namespace ChainedWithMe {
                 objCharController.transform.position = Position.Value;
             }
 
-            SendDataServerRpc(vInputData.x, vInputData.y, vInputData.z);
+            if (IsOwner) {
+                SendDataServerRpc(vInputData.x, vInputData.y, vInputData.z);
+            }
         }
 
         private void Update() {
