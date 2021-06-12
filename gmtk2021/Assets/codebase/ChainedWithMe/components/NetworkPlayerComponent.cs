@@ -48,7 +48,7 @@ namespace ChainedWithMe {
                 //    //SetPosition(Position.Value);
                 //}
 
-                Debug.Log(fDistance);
+                //Debug.Log(fDistance);
             }
 
             if (IsOwner) {
