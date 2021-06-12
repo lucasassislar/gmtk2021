@@ -70,7 +70,7 @@ namespace ChainedWithMe {
                 }
             }
 
-            ArmsPlayer.HidePlayerClientRpc();
+            //ArmsPlayer.HidePlayerClientRpc();
         }
 
         public void ReceiveLayer(bool bIsLegs, int nLayerMask) {
@@ -130,7 +130,7 @@ namespace ChainedWithMe {
                         LegsPlayer = netPlayer;
                     } else {
                         ArmsPlayer = netPlayer;
-                        ArmsPlayer.HidePlayerClientRpc();
+                        //ArmsPlayer.HidePlayerClientRpc();
                     }
                 }
             }

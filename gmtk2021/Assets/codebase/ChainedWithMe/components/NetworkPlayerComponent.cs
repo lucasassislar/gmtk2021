@@ -54,13 +54,6 @@ namespace ChainedWithMe {
             fAttack -= Time.deltaTime * 10000;
             fAttack = Math.Max(0, fAttack);
 
-
-            if (IsServer) {
-                RunOnServer();
-            } else {
-                RunOnClient();
-            }
-
             float fGravity = Physics.gravity.y;
             if (IsOwner) {
                 objCharController.SimpleMove(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
@@ -74,24 +67,30 @@ namespace ChainedWithMe {
                 Vector3 vData = Data.Value;
                 objCharController.SimpleMove(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
             }
+
+            if (IsServer) {
+                RunOnServer();
+            } else {
+                RunOnClient();
+            }
         }
 
         private void RunOnServer() {
             SendPosClientRpc();
 
-            if (fAttackTimer > fAttackTime) {
-                if (this == GameManager.Instance.ArmsPlayer) {
-                    Vector3 vData = Data.Value;
-                    if (vData.z > 0) {
-                        fAttackTimer = 0;
-                        // attack
+            //if (fAttackTimer > fAttackTime) {
+            //    if (this == GameManager.Instance.ArmsPlayer) {
+            //        Vector3 vData = Data.Value;
+            //        if (vData.z > 0) {
+            //            fAttackTimer = 0;
+            //            // attack
 
-                        //for (int i = 0; i < GameManager.Instance.LegsPlayer.objEnemyList.enemies.Count; i++) {
-                        //    GameManager.Instance.LegsPlayer.objEnemyList.enemies[i].DieClientRpc();
-                        //}
-                    }
-                }
-            }
+            //            //for (int i = 0; i < GameManager.Instance.LegsPlayer.objEnemyList.enemies.Count; i++) {
+            //            //    GameManager.Instance.LegsPlayer.objEnemyList.enemies[i].DieClientRpc();
+            //            //}
+            //        }
+            //    }
+            //}
         }
 
         private void RunOnClient() {
