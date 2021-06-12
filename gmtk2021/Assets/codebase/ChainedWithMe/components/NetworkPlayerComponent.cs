@@ -34,7 +34,12 @@ namespace ChainedWithMe {
         private float fTimer;
 
         private int clientLayer;
-        public void SetClientLayer(int layer) {
+        private bool bIsLegs;
+
+        private bool bSent;
+
+        public void SetClientLayer(bool bIsLegs, int layer) {
+            this.bIsLegs = bIsLegs;
             clientLayer = layer;
         }
 
@@ -66,8 +71,6 @@ namespace ChainedWithMe {
             }
         }
 
-        private bool bSent;
-
         private void Update() {
             fTimer += Time.deltaTime;
 
@@ -85,7 +88,7 @@ namespace ChainedWithMe {
 
             if (!bSent) {
                 bSent = true;
-                SendClientVersionClientRpc(this.clientLayer);
+                SendClientVersionClientRpc(bIsLegs, this.clientLayer);
             }
         }
 
@@ -105,9 +108,13 @@ namespace ChainedWithMe {
         }
 
         [ClientRpc]
-        public void SendClientVersionClientRpc(int nLayerMask) {
-            Debug.Log($"nLayerMask: {nLayerMask}");
-            GameManager.Instance.ReceiveLayer(nLayerMask);
+        public void HidePlayerClientRpc() {
+            objCharController.gameObject.SetActive(false);
+        }
+
+        [ClientRpc]
+        public void SendClientVersionClientRpc(bool bIsLegs, int nLayerMask) {
+            GameManager.Instance.ReceiveLayer(bIsLegs, nLayerMask);
         }
 
         public void SetPosition(Vector3 pos) {
