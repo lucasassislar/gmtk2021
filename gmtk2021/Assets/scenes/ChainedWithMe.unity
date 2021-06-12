@@ -845,10 +845,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerA:
     serializedVersion: 2
-    m_Bits: 887
+    m_Bits: 8055
   layerB:
     serializedVersion: 2
-    m_Bits: 951
+    m_Bits: 8119
+  layerGhost:
+    serializedVersion: 2
+    m_Bits: 7991
 --- !u!1001 &455755488
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2175,6 +2178,63 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2853704237034948363, guid: 272d38bce9609524aa4e721bfc7c798f, type: 3}
   m_PrefabInstance: {fileID: 963476366}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &971902250
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3652084435043910200, guid: bd5f6cd4004b5b5468420062ae557326, type: 3}
+      propertyPath: m_Name
+      value: NetworkPlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 3652084435043910201, guid: bd5f6cd4004b5b5468420062ae557326, type: 3}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3652084435043910201, guid: bd5f6cd4004b5b5468420062ae557326, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3652084435043910201, guid: bd5f6cd4004b5b5468420062ae557326, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3652084435043910201, guid: bd5f6cd4004b5b5468420062ae557326, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3652084435043910201, guid: bd5f6cd4004b5b5468420062ae557326, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3652084435043910201, guid: bd5f6cd4004b5b5468420062ae557326, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3652084435043910201, guid: bd5f6cd4004b5b5468420062ae557326, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3652084435043910201, guid: bd5f6cd4004b5b5468420062ae557326, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3652084435043910201, guid: bd5f6cd4004b5b5468420062ae557326, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3652084435043910201, guid: bd5f6cd4004b5b5468420062ae557326, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3652084435043910201, guid: bd5f6cd4004b5b5468420062ae557326, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bd5f6cd4004b5b5468420062ae557326, type: 3}
 --- !u!1001 &991752238
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4220,7 +4280,7 @@ MonoBehaviour:
   MessageBufferSize: 5120
   MaxConnections: 100
   MaxSentMessageQueueSize: 128
-  ConnectAddress: 127.0.0.1
+  ConnectAddress: 25.17.197.44
   ConnectPort: 7777
   ServerListenPort: 7777
   ServerWebsocketListenPort: 8887
@@ -5174,7 +5234,7 @@ GameObject:
   - component: {fileID: 1931899669433549244}
   - component: {fileID: 1931899669433549245}
   - component: {fileID: 1931899669433549234}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}

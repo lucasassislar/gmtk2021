@@ -9,5 +9,7 @@ namespace ChainedWithMe {
     public class CameraManager : MonoBehaviour {
         public LayerMask layerA;
         public LayerMask layerB;
+
+        public LayerMask layerGhost;
     }
 }

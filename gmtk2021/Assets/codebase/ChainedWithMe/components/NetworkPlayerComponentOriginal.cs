@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ChainedWithMe {
-    public class NetworkPlayerComponent : NetworkBehaviour, IRestartable {
+    public class NetworkPlayerComponentOriginal : NetworkBehaviour, IRestartable {
         public float fSpeed = 1;
         public float fAttackTime = 0.5f;
 
-        public ListBodyComponent objBodyList;
+        public ListEnemyComponent objEnemyList;
         public MeshRenderer meshRenderer;
 
         private Vector3 vInputData;

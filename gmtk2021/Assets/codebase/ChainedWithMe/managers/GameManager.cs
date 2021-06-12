@@ -23,6 +23,11 @@ namespace ChainedWithMe {
 
         private bool bIsFirst = true;
 
+        private List<IRestartable> restartables;
+
+        public NetworkPlayerComponent LegsPlayer { get; private set; }
+        public NetworkPlayerComponent ArmsPlayer { get; private set; }
+
         public bool IsLegs {
             get { return bIsLegs; }
         }
@@ -30,11 +35,6 @@ namespace ChainedWithMe {
         public int ClientLayerMask {
             get { return this.layerMaskB; }
         }
-
-        private List<IRestartable> restartables;
-
-        public NetworkPlayerComponent LegsPlayer { get; private set; }
-        public NetworkPlayerComponent ArmsPlayer { get; private set; }
 
         void Start() {
             Instance = this;

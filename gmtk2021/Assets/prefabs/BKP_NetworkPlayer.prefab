@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 3687283735563031699}
   - component: {fileID: 7296148926067591895}
   - component: {fileID: 7529164357600007532}
-  - component: {fileID: 971902252}
-  m_Layer: 10
-  m_Name: TriggerBody
+  - component: {fileID: 8068472977034499542}
+  m_Layer: 0
+  m_Name: TriggerEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -62,7 +62,7 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 4.77
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &971902252
+--- !u!114 &8068472977034499542
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -71,10 +71,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2676071884959469638}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16f5cb91312f4a34eaa78f1f38d5c894, type: 3}
+  m_Script: {fileID: 11500000, guid: 5ce7c05084b3a684dbc7acd2aa282f48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bodies: []
+  enemies: []
 --- !u!1 &3652084435043910200
 GameObject:
   m_ObjectHideFlags: 0
@@ -86,8 +86,8 @@ GameObject:
   - component: {fileID: 3652084435043910201}
   - component: {fileID: 7698247516217199486}
   - component: {fileID: 8795763781195973682}
-  m_Layer: 10
-  m_Name: NetworkPlayer
+  m_Layer: 0
+  m_Name: BKP_NetworkPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -122,7 +122,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fSpeed: 1200
   fAttackTime: 0.5
-  objBodyList: {fileID: 0}
+  objEnemyList: {fileID: 8068472977034499542}
   meshRenderer: {fileID: 1711813855944873424}
   Data:
     m_InternalValue: {x: 0, y: 0, z: 0}
@@ -154,9 +154,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8491531970025593858}
-  - component: {fileID: 158854155}
-  m_Layer: 10
-  m_Name: Ghost
+  - component: {fileID: 8328820586660681554}
+  - component: {fileID: 3395507007498170370}
+  m_Layer: 0
+  m_Name: Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -178,7 +179,7 @@ Transform:
   m_Father: {fileID: 3652084435043910201}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!143 &158854155
+--- !u!143 &8328820586660681554
 CharacterController:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -196,6 +197,18 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3395507007498170370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7984954767170186542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23029d4be20a96e4684ea7841b2d72eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &931989844
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -269,11 +282,7 @@ PrefabInstance:
       objectReference: {fileID: -8033846184655501357, guid: 8f8efeb0d75d7ad47a1826527f92f911, type: 3}
     - target: {fileID: 919132149155446097, guid: 866b3eece43b450439ecfdc8844f8bc1, type: 3}
       propertyPath: m_Name
-      value: GhostBody
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 866b3eece43b450439ecfdc8844f8bc1, type: 3}
-      propertyPath: m_Layer
-      value: 10
+      value: monkey
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 866b3eece43b450439ecfdc8844f8bc1, type: 3}

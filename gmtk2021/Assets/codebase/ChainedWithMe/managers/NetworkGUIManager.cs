@@ -13,22 +13,17 @@ namespace ChainedWithMe {
                 GameManager.Instance.StartGame(true);
                 NetworkManager.Singleton.StartHost();
             }
+
             if (GUILayout.Button("Client")) {
                 GameManager.Instance.StartGame(false);
                 NetworkManager.Singleton.StartClient();
             }
-            if (GUILayout.Button("Server")) {
-                GameManager.Instance.StartGame(true);
-                NetworkManager.Singleton.StartServer();
-            }
-
         }
 
         static void StatusLabels() {
             var mode = NetworkManager.Singleton.IsHost ?
                 "Host" : NetworkManager.Singleton.IsServer ? "Server" : "Client";
 
-            GUILayout.Label("Transport: " + NetworkManager.Singleton.NetworkConfig.NetworkTransport.GetType().Name);
             GUILayout.Label("Mode: " + mode);
         }
 
