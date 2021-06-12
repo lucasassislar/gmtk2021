@@ -10,15 +10,15 @@ namespace ChainedWithMe {
     public class NetworkGUIManager : MonoBehaviour {
         static void StartButtons() {
             if (GUILayout.Button("Host")) {
-                GameManager.Instance.StartGame();
+                GameManager.Instance.StartGame(true);
                 NetworkManager.Singleton.StartHost();
             }
             if (GUILayout.Button("Client")) {
-                GameManager.Instance.StartGame();
+                GameManager.Instance.StartGame(false);
                 NetworkManager.Singleton.StartClient();
             }
             if (GUILayout.Button("Server")) {
-                GameManager.Instance.StartGame();
+                GameManager.Instance.StartGame(true);
                 NetworkManager.Singleton.StartServer();
             }
         }

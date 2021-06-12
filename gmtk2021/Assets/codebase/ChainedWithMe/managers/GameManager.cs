@@ -19,7 +19,6 @@ namespace ChainedWithMe {
             Instance = this;
             CameraManager = GetComponent<CameraManager>();
 
-            StartGame();
             objOverlay.SetActive(true);
         }
 
@@ -42,7 +41,7 @@ namespace ChainedWithMe {
         }
 
         public void RestartGame() {
-            StartGame();
+            //StartGame();
         }
 
         public void StartGame(NetworkPlayerComponent netPlayer) {
