@@ -197,7 +197,7 @@ namespace ChainedWithMe {
 
             if (bIsHost) {
                 bIsEthereal = Random.Range(0, 100) > 50;
-                bIsEthereal = true;
+                bIsEthereal = false;
 
                 objOverlay.SetActive(false);
 
