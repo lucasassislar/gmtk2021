@@ -2,71 +2,77 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class anim_auto_door : MonoBehaviour {
+public class anim_vertical_plat : MonoBehaviour {
     Animator animator;
+
     private bool bInsideTrigger;
     public float timeValue = 5;
+    private bool canPressButton;
+
 
 
     // Start is called before the first frame update
     void Start() {
+
         animator = GetComponent<Animator>();
-        bInsideTrigger = false;
+        canPressButton = true;
+
     }
 
     // Update is called once per frame
     void Update() {
+        bool pressedInteractButton = Input.GetKeyDown(KeyCode.E);
+        bool isGoingUp = animator.GetBool("isGoingUp");
 
-        bool isOpened = animator.GetBool("isOpened");
-
-        bool pressedOpen = Input.GetKeyDown(KeyCode.E);
-
-        if (!isOpened && pressedOpen && bInsideTrigger) {
-            isOpened = true;
-            Debug.Log("aperto e");
+        if (!isGoingUp && pressedInteractButton && bInsideTrigger && canPressButton) {
+            canPressButton = false;
+            Debug.Log("APERTOU");
+            isGoingUp = true;
         }
 
-        if (isOpened && timeValue >= 0) {
+        if (isGoingUp && timeValue >= 0) {
             timeValue -= Time.deltaTime;
-            Debug.Log("comeco contar o tempo");
-
         }
 
-        if (timeValue <= 0) {
-            isOpened = false;
+        if (isGoingUp && timeValue <= 0) {
+            isGoingUp = false;
             timeValue = 5;
-            Debug.Log("termino o tempo");
-
-
         }
 
-        animator.SetBool("isOpened", isOpened);
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("plat_vertical_idle")) {
+
+            canPressButton = true;
+        }
+
+        animator.SetBool("isGoingUp", isGoingUp);
+  
+
     }
 
     private void OnTriggerEnter(Collider other) {
 
         if (other.gameObject.layer != LayerMask.NameToLayer("Player")) {
             return;
+
         }
-        Debug.Log("entrou");
 
         bInsideTrigger = true;
     }
 
 
-    private void OnTriggerStay(Collider other) {
-
-        Debug.Log("tadentro");
-    }
-
     private void OnTriggerExit(Collider other) {
 
         if (other.gameObject.layer != LayerMask.NameToLayer("Player")) {
             return;
+
         }
-        Debug.Log("saiu");
 
         bInsideTrigger = false;
 
     }
+
+
+
+
+
 }
