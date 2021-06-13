@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7895993458866037075}
   - component: {fileID: 7895993458866037077}
   - component: {fileID: 7895993458866037076}
+  - component: {fileID: 1950722126}
   m_Layer: 0
   m_Name: ==NETWORK==
   m_TagString: Untagged
@@ -112,3 +113,15 @@ MonoBehaviour:
   MLAPIRelayAddress: 184.72.104.138
   MLAPIRelayPort: 8888
   MessageSendMode: 0
+--- !u!114 &1950722126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7895993458866037074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c6e72294366a12428f4d96775a568a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
