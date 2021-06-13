@@ -25,8 +25,6 @@ namespace ChainedWithMe {
         private float fJumpTimer;
 
         private bool bSent;
-        private bool bSetPosition;
-
         private float fCurrentJumpForce;
 
 
@@ -56,8 +54,12 @@ namespace ChainedWithMe {
             }
         }
 
+        private Vector3 vStartPos;
+
         private void Start() {
             CharController = GetComponentInChildren<CharacterController>();
+
+            setPosition(vStartPos);
 
             GameManager.Instance.StartGame(this);
 
@@ -81,39 +83,25 @@ namespace ChainedWithMe {
 
             float fGravity = Physics.gravity.y;
 
-            Vector3 vToAdd = new Vector3();
-            if (IsOwner) {
-                CharController.Move(new Vector3(
-                    (vInputData.x * -fSpeed * Time.deltaTime) + vToAdd.x,
-                    (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime) + vToAdd.y,
-                     (vInputData.y * -fSpeed * Time.deltaTime) + vToAdd.z));
-            } else {
-                setPosition(Position.Value);
+            if (this == GameManager.Instance.EtherealPlayer) {
+
+            } else if (this == GameManager.Instance.RealPlayer) {
+                if(IsOwner){
+                    Vector3 vToAdd = new Vector3();
+                    CharController.Move(new Vector3(
+                           (vInputData.x * -fSpeed * Time.deltaTime) + vToAdd.x,
+                           (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime) + vToAdd.y,
+                            (vInputData.y * -fSpeed * Time.deltaTime) + vToAdd.z));
+
+                    SendData();
+
+                    SendPosition();
+                } else {
+                    Debug.LogError("REAL PLAYER WAT");
+
+                    SetPosition(Position.Value);
+                }
             }
-
-            if (IsServer) {
-                SendDataClientRpc(vInputData.x, vInputData.y);
-
-                RunOnServer();
-            } else {
-                SendDataServerRpc(vInputData.x, vInputData.y);
-
-                RunOnClient();
-            }
-        }
-
-        private void RunOnServer() {
-            SendPosClientRpc();
-        }
-
-        private void RunOnClient() {
-            if (bSetPosition) {
-                bSetPosition = false;
-                fTimer = 0;
-                return;
-            }
-
-            SendPosServerRpc();
         }
 
         private void Update() {
@@ -198,19 +186,36 @@ namespace ChainedWithMe {
             audioSource.Play();
         }
 
+        private void SendData() {
+            if (IsServer) {
+                SendDataClientRpc();
+            } else {
+                SendDataServerRpc();
+            }
+        }
+
         [ServerRpc]
-        private void SendDataServerRpc(float fHor, float fVer) {
-            Data.Value = new Vector3(fHor, fVer);
+        private void SendDataServerRpc() {
+            Data.Value = new Vector2(vInputData.x, vInputData.y);
         }
 
         [ClientRpc]
-        private void SendDataClientRpc(float fHor, float fVer) {
-            Data.Value = new Vector2(fHor, fVer);
+        private void SendDataClientRpc() {
+            Data.Value = new Vector2(vInputData.x, vInputData.y);
+        }
+
+        private void SendPosition() {
+            Position.Value = CharController.transform.position;
+
+            //if (IsServer) {
+            //    SendPosClientRpc();
+            //} else {
+            //    SendPosServerRpc();
+            //}
         }
 
         [ServerRpc]
         private void SendPosServerRpc() {
-            Position.Value = CharController.transform.position;
         }
 
         [ClientRpc]
@@ -225,6 +230,8 @@ namespace ChainedWithMe {
 
         [ClientRpc]
         public void ShowPlayerClientRpc(Vector3 vPos) {
+            Position.Value = CharController.transform.position;
+
             CharController.enabled = true;
             meshRenderer.enabled = true;
             SetPosition(vPos);
@@ -247,11 +254,14 @@ namespace ChainedWithMe {
         }
 
         public void SetPosition(Vector3 pos) {
-            bSetPosition = true;
-
             if (!CharController) {
                 CharController = GetComponent<CharacterController>();
             }
+            if (!CharController) {
+                vStartPos = pos;
+                return;
+            }
+
             setPosition(pos);
         }
     }

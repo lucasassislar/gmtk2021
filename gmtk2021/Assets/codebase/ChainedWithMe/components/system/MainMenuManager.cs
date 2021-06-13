@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 namespace ChainedWithMe.System {
     public class MainMenuManager : MonoBehaviour {
-        public Text txtIp;
+        public InputField fieldIP;
 
         public void Host() {
             Globals.IsHost = true;
@@ -24,7 +24,7 @@ namespace ChainedWithMe.System {
 
             UNetTransport unet = NetworkManager.Singleton.GetComponent<UNetTransport>();
 
-            string ipAddress = txtIp.text;
+            string ipAddress = fieldIP.text;
             unet.ConnectAddress = ipAddress;
 
             SceneManager.LoadScene("ChainedWithMe");

@@ -15,6 +15,14 @@ namespace ChainedWithMe {
         }
 
         private void Singleton_OnClientDisconnectCallback(ulong obj) {
+            if (NetworkManager.Singleton.IsServer) {
+                NetworkManager.Singleton.StopServer();
+            }
+
+            if (NetworkManager.Singleton.IsClient) {
+                NetworkManager.Singleton.StopClient();
+            }
+
             SceneManager.LoadScene("MainMenu");
         }
 

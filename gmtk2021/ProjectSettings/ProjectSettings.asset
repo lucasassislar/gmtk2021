@@ -148,7 +148,7 @@ PlayerSettings:
   applicationIdentifier:
     Standalone: com.Tatuape.gmtk2021
   buildNumber:
-    Standalone: 13
+    Standalone: 15
     iPhone: 0
     tvOS: 0
   overrideDefaultApplicationIdentifier: 0

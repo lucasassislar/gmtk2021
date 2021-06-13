@@ -3,6 +3,7 @@ using MLAPI.Connection;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ChainedWithMe {
     public class GameManager : MonoBehaviour {
@@ -88,6 +89,9 @@ namespace ChainedWithMe {
                 }
             }
 
+            EtherealPlayer.gameObject.name = "EtherealPlayer";
+            RealPlayer.gameObject.name = "RealPlayer";
+
             if (EtherealPlayer != null) {
                 EtherealPlayer.HidePlayerClientRpc();
             }
@@ -121,7 +125,14 @@ namespace ChainedWithMe {
                 StartGame(true);
                 NetworkManager.Singleton.StartHost();
             } else {
+                StartGame(false);
                 NetworkManager.Singleton.StartClient();
+            }
+        }
+
+        private void OnDestroy() {
+            if (NetworkManager.Singleton != null) {
+                NetworkManager.Singleton.OnClientConnectedCallback -= Singleton_OnClientConnectedCallback;
             }
         }
 
@@ -133,6 +144,19 @@ namespace ChainedWithMe {
                 }
             }
 
+            if (Input.GetKeyDown(KeyCode.Escape)) {
+                End();
+
+                if (NetworkManager.Singleton.IsServer) {
+                    NetworkManager.Singleton.StopServer();
+                }
+
+                if (NetworkManager.Singleton.IsClient) {
+                    NetworkManager.Singleton.StopClient();
+                }
+
+                SceneManager.LoadScene("MainMenu");
+            }
         }
 
         private void Singleton_OnClientConnectedCallback(ulong obj) {
@@ -144,8 +168,11 @@ namespace ChainedWithMe {
 
             if (bIsEthereal) {
                 RealPlayer = client.PlayerObject.GetComponent<NetworkPlayerComponent>();
+                RealPlayer.SetPosition(level.objSpawn.transform.position);
+
             } else {
                 EtherealPlayer = client.PlayerObject.GetComponent<NetworkPlayerComponent>();
+                EtherealPlayer.SetPosition(level.objSpawn.transform.position);
 
                 for (int i = 0; i < NetworkManager.Singleton.ConnectedClientsList.Count; i++) {
                     NetworkClient objClient = NetworkManager.Singleton.ConnectedClientsList[i];
@@ -157,6 +184,9 @@ namespace ChainedWithMe {
                     break;
                 }
             }
+
+            EtherealPlayer.gameObject.name = "EtherealPlayer";
+            RealPlayer.gameObject.name = "RealPlayer";
 
             EtherealPlayer.HidePlayerClientRpc();
         }
@@ -184,6 +214,9 @@ namespace ChainedWithMe {
                 }
             }
 
+            EtherealPlayer.gameObject.name = "EtherealPlayer";
+            RealPlayer.gameObject.name = "RealPlayer";
+
             camera.cullingMask = nLayerMask;
             this.bIsEthereal = bIsEthereal;
 
@@ -204,7 +237,7 @@ namespace ChainedWithMe {
 
             if (bIsHost) {
                 bIsEthereal = Random.Range(0, 100) > 50;
-                bIsEthereal = false;
+                bIsEthereal = true;
 
                 objOverlay.SetActive(false);
 
@@ -239,9 +272,11 @@ namespace ChainedWithMe {
 
         public void StartGame(NetworkPlayerComponent netPlayer) {
             Players.Add(netPlayer);
+
             if (bIsHost) {
                 if (bIsFirst) {
                     bIsFirst = false;
+
                     if (bIsEthereal) {
                         EtherealPlayer = netPlayer;
                         EtherealPlayer.HidePlayerClientRpc();
