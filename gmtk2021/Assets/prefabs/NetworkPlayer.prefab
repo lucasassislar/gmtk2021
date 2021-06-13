@@ -120,11 +120,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 530f483d258b1ae448a4c2d913e848be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fSpeed: 1200
-  fAttackTime: 0.5
+  fSpeed: 30
+  fJumpForce: 5
+  fJumpTime: 0.1
   meshRenderer: {fileID: 1711813855944873424}
   Data:
-    m_InternalValue: {x: 0, y: 0, z: 0}
+    m_InternalValue: {x: 0, y: 0}
   Position:
     m_InternalValue: {x: 0, y: 0, z: 0}
 --- !u!114 &8795763781195973682

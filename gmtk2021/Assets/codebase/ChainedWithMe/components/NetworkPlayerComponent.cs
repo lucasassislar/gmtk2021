@@ -11,22 +11,24 @@ using UnityEngine;
 namespace ChainedWithMe {
     public class NetworkPlayerComponent : NetworkBehaviour, IRestartable {
         public float fSpeed = 1;
-        public float fAttackTime = 0.5f;
+        public float fJumpForce = 40;
+        public float fJumpTime = 0.1f;
 
         public MeshRenderer meshRenderer;
 
-        private Vector3 vInputData;
+        private Vector2 vInputData;
         private float fTimer;
 
-        private float fAttackTimer;
-        private float fAttack;
+        private float fJumpTimer;
 
         private bool bSent;
         private bool bSetPosition;
 
+        private float fCurrentJumpForce;
+
         public CharacterController CharController { get; private set; }
 
-        public NetworkVariableVector3 Data = new NetworkVariableVector3(new NetworkVariableSettings {
+        public NetworkVariableVector2 Data = new NetworkVariableVector2(new NetworkVariableSettings {
             WritePermission = NetworkVariablePermission.Everyone,
             ReadPermission = NetworkVariablePermission.Everyone
         });
@@ -49,28 +51,31 @@ namespace ChainedWithMe {
         }
 
         private void FixedUpdate() {
-            fAttackTimer += Time.deltaTime;
-            fAttack -= Time.deltaTime * 10000;
-            fAttack = Math.Max(0, fAttack);
+            if (fJumpTimer < fJumpTime) {
+                fCurrentJumpForce = fJumpForce;
+            } else {
+                fCurrentJumpForce = 0;
+            }
 
             float fGravity = Physics.gravity.y;
-
-            if (IsServer) {
-                SendDataClientRpc(vInputData.x, vInputData.y, vInputData.z);
-            } else {
-                SendDataServerRpc(vInputData.x, vInputData.y, vInputData.z);
-            }
-
             if (IsOwner) {
-                CharController.SimpleMove(new Vector3(vInputData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vInputData.y * -fSpeed * Time.deltaTime));
+                CharController.Move(new Vector3(vInputData.x * -fSpeed * Time.deltaTime,
+                    (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime),
+                    vInputData.y * -fSpeed * Time.deltaTime));
             } else {
                 Vector3 vData = Data.Value;
-                CharController.SimpleMove(new Vector3(vData.x * -fSpeed * Time.deltaTime, fGravity * Time.deltaTime, vData.y * -fSpeed * Time.deltaTime));
+                CharController.Move(new Vector3(vData.x * -fSpeed * Time.deltaTime,
+                    (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime),
+                    vData.y * -fSpeed * Time.deltaTime));
             }
 
             if (IsServer) {
+                SendDataClientRpc(vInputData.x, vInputData.y);
+
                 RunOnServer();
             } else {
+                SendDataServerRpc(vInputData.x, vInputData.y);
+
                 RunOnClient();
             }
         }
@@ -78,23 +83,8 @@ namespace ChainedWithMe {
         private void RunOnServer() {
             SendPosClientRpc();
 
-            //Vector3 vData = Data.Value;
-            //if (vData.z > 0) {
-            //    fAttackTimer = 0;
 
-            //    List<BodyComponent> bodies = objBodyList.bodies;
-            //    if (bodies.Count == 0) {
-            //        return;
-            //    }
-
-            //    inside = bodies[0];
-            //    GameManager.Instance.EnterBody(inside);
-
-            //    inside.EnterClientRpc();
-            //    HidePlayer();
-            //}
         }
-
 
         private void RunOnClient() {
             if (bSetPosition) {
@@ -114,16 +104,21 @@ namespace ChainedWithMe {
 
         private void Update() {
             fTimer += Time.deltaTime;
+            fJumpTimer += Time.deltaTime;
 
             if (IsOwner) {
                 float fHor = Input.GetAxisRaw("Horizontal");
-                float fVer = Input.GetAxisRaw("Vertical");
+                float fVer = Input.GetAxisRaw("Vertical");                
 
-                if (Input.GetKeyDown(KeyCode.Return)) {
-                    fAttack = 0.05f * 10000;
+                vInputData = new Vector2(fHor, fVer);
+            }
+
+            if (this == GameManager.Instance.RealPlayer) {
+                if (fJumpTimer > fJumpTime) {
+                    if (Input.GetKeyDown(KeyCode.Space)) {
+                        Jump();
+                    }
                 }
-
-                vInputData = new Vector3(fHor, fVer, fAttack);
             }
 
             if (!bSent) {
@@ -134,14 +129,32 @@ namespace ChainedWithMe {
             }
         }
 
-        [ServerRpc]
-        private void SendDataServerRpc(float fHor, float fVer, float fAttack) {
-            Data.Value = new Vector3(fHor, fVer, fAttack);
+        private void Jump() {
+            if (IsServer) {
+                JumpClientRpc();
+            } else {
+                JumpServerRpc();
+            }
         }
 
         [ClientRpc]
-        private void SendDataClientRpc(float fHor, float fVer, float fAttack) {
-            Data.Value = new Vector3(fHor, fVer, fAttack);
+        public void JumpClientRpc() {
+            fJumpTimer = 0;
+        }
+
+        [ServerRpc]
+        public void JumpServerRpc() {
+            fJumpTimer = 0;
+        }
+
+        [ServerRpc]
+        private void SendDataServerRpc(float fHor, float fVer) {
+            Data.Value = new Vector3(fHor, fVer);
+        }
+
+        [ClientRpc]
+        private void SendDataClientRpc(float fHor, float fVer) {
+            Data.Value = new Vector2(fHor, fVer);
         }
 
         [ClientRpc]
