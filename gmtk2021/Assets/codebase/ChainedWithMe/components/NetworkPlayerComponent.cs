@@ -83,27 +83,30 @@ namespace ChainedWithMe {
 
             Vector3 vToAdd = new Vector3();
             if (IsOwner) {
-                CharController.Move(new Vector3(
-                    (vInputData.x * -fSpeed * Time.deltaTime) + vToAdd.x,
-                    (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime) + vToAdd.y,
-                     (vInputData.y * -fSpeed * Time.deltaTime) + vToAdd.z));
+                if (CharController.enabled) {
+                    CharController.Move(new Vector3(
+                        (vInputData.x * -fSpeed * Time.deltaTime) + vToAdd.x,
+                        (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime) + vToAdd.y,
+                         (vInputData.y * -fSpeed * Time.deltaTime) + vToAdd.z));
+                }
             } else {
                 setPosition(Position.Value);
             }
 
             if (IsServer) {
+                SendDataServerRpc(vInputData.x, vInputData.y);
+
+                SendPosServerRpc();
+            } else {
                 SendDataClientRpc(vInputData.x, vInputData.y);
 
-                RunOnServer();
-            } else {
-                SendDataServerRpc(vInputData.x, vInputData.y);
+                SendPosClientRpc();
 
                 RunOnClient();
             }
         }
 
         private void RunOnServer() {
-            SendPosClientRpc();
         }
 
         private void RunOnClient() {
@@ -112,8 +115,6 @@ namespace ChainedWithMe {
                 fTimer = 0;
                 return;
             }
-
-            SendPosServerRpc();
         }
 
         private void Update() {
@@ -225,6 +226,8 @@ namespace ChainedWithMe {
 
         [ClientRpc]
         public void ShowPlayerClientRpc(Vector3 vPos) {
+            Position.Value = CharController.transform.position;
+
             CharController.enabled = true;
             meshRenderer.enabled = true;
             SetPosition(vPos);

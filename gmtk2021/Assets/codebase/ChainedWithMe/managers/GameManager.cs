@@ -89,6 +89,9 @@ namespace ChainedWithMe {
                 }
             }
 
+            EtherealPlayer.gameObject.name = "EtherealPlayer";
+            RealPlayer.gameObject.name = "RealPlayer";
+
             if (EtherealPlayer != null) {
                 EtherealPlayer.HidePlayerClientRpc();
             }
