@@ -29,6 +29,7 @@ namespace ChainedWithMe {
 
 
         public CharacterController CharController { get; private set; }
+        public SphereCollider Sphere { get; private set; }
 
         public AudioClip clipJump;
 
@@ -58,6 +59,7 @@ namespace ChainedWithMe {
 
         private void Start() {
             CharController = GetComponentInChildren<CharacterController>();
+            Sphere = GetComponentInChildren<SphereCollider>();
 
             setPosition(vStartPos);
 
@@ -87,6 +89,9 @@ namespace ChainedWithMe {
 
             } else if (this == GameManager.Instance.RealPlayer) {
                 if(IsOwner){
+                    CharController.enabled = true;
+                    Sphere.enabled = false;
+
                     Vector3 vToAdd = new Vector3();
                     CharController.Move(new Vector3(
                            (vInputData.x * -fSpeed * Time.deltaTime) + vToAdd.x,
@@ -97,9 +102,11 @@ namespace ChainedWithMe {
 
                     SendPosition();
                 } else {
-                    Debug.LogError("REAL PLAYER WAT");
+                    CharController.enabled = false;
+                    Sphere.enabled = true;
 
-                    SetPosition(Position.Value);
+                    Sphere.transform.position = Position.Value;
+                    //SetPosition(Position.Value);
                 }
             }
         }

@@ -20,15 +20,21 @@ namespace ChainedWithMe.Level {
 
         private PlayerTriggerComponent trigger;
 
+        public GameObject objPressE;
+
         private void Start() {
             animator = GetComponentInChildren<Animator>();
             audioSource = GetComponentInChildren<AudioSource>();
             trigger = GetComponentInChildren<PlayerTriggerComponent>();
 
             fTimeValue = fMaxPlatformTime;
+
+            objPressE.SetActive(false);
         }
 
         private void Update() {
+            objPressE.SetActive(trigger.InsideTrigger);
+
             bool bIsGoingUp = animator.GetBool("isGoingUp");
 
             if (IsServer) {

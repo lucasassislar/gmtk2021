@@ -12,8 +12,9 @@ namespace ChainedWithMe.Level {
 
         public bool Interacting { get; private set; }
 
+        public bool bInsideTrigger;
+
         public void Interact() {
-            Debug.Log("INTERACT");
             Interacting = true;
         }
 
@@ -27,6 +28,8 @@ namespace ChainedWithMe.Level {
             }
             InsideTrigger = true;
 
+            bInsideTrigger = true;
+
             GameManager.Instance.EtherealPlayer.SetInside(this);
         }
 
@@ -35,6 +38,7 @@ namespace ChainedWithMe.Level {
                 return;
             }
             InsideTrigger = false;
+            bInsideTrigger = false;
 
             GameManager.Instance.EtherealPlayer.SetInsideOut(this);
         }
