@@ -60,15 +60,19 @@ namespace ChainedWithMe {
             }
 
             float fGravity = Physics.gravity.y;
+
+            Vector3 vToAdd = new Vector3();
             if (IsOwner) {
-                CharController.Move(new Vector3(vInputData.x * -fSpeed * Time.deltaTime,
-                    (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime),
-                    vInputData.y * -fSpeed * Time.deltaTime));
+                CharController.Move(new Vector3(
+                    (vInputData.x * -fSpeed * Time.deltaTime) + vToAdd.x,
+                    (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime) + vToAdd.y,
+                     (vInputData.y * -fSpeed * Time.deltaTime) + vToAdd.z));
             } else {
                 Vector3 vData = Data.Value;
-                CharController.Move(new Vector3(vData.x * -fSpeed * Time.deltaTime,
-                    (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime),
-                    vData.y * -fSpeed * Time.deltaTime));
+                CharController.Move(new Vector3(
+                    (vData.x * -fSpeed * Time.deltaTime) + vToAdd.x,
+                    (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime) + vToAdd.y,
+                    (vData.y * -fSpeed * Time.deltaTime) + vToAdd.z));
             }
 
             if (IsServer) {
@@ -84,8 +88,6 @@ namespace ChainedWithMe {
 
         private void RunOnServer() {
             SendPosClientRpc();
-
-
         }
 
         private void RunOnClient() {
@@ -117,13 +119,13 @@ namespace ChainedWithMe {
 
             if (this == GameManager.Instance.RealPlayer) {
                 if (fJumpTimer > fJumpTime) {
-                    if (Input.GetKeyDown(KeyCode.Space)) {
+                    if (Input.GetKey(KeyCode.Space)) {
                         Jump();
                     }
                 }
 
                 Interacting = false;
-                if (Input.GetKeyDown(KeyCode.E)) {
+                if (Input.GetKey(KeyCode.E)) {
                     Interact();
                 }
             }
