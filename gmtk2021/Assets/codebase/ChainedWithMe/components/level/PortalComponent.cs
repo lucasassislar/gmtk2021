@@ -9,6 +9,12 @@ namespace ChainedWithMe.Level {
     public class PortalComponent : MonoBehaviour {
         public bool bDisabled;
 
+        private AudioSource audioSource;
+
+        private void Start() {
+            audioSource = GetComponent<AudioSource>();
+        }
+
         private void OnTriggerEnter(Collider other) {
             if (bDisabled || 
                 other.gameObject.layer != LayerMask.NameToLayer("Player")) {
@@ -16,7 +22,7 @@ namespace ChainedWithMe.Level {
             }
 
             bDisabled = true;
-            GameManager.Instance.SwapView();
+            GameManager.Instance.SwapView(audioSource);
         }
     }
 }

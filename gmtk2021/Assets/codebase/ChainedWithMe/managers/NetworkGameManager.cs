@@ -13,11 +13,5 @@ namespace ChainedWithMe {
         private void Start() {
             Instance = this;
         }
-
-        [ClientRpc]
-        public void SwapViewClientRpc() {
-            GameManager.Instance.ClientSwapView();
-            
-        }
     }
 }
