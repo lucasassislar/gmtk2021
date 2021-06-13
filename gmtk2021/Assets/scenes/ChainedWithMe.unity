@@ -1707,9 +1707,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 408010739}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79579516428b7cb498b87fbeed107aec, type: 3}
+  m_Script: {fileID: 11500000, guid: 4bab08afdbe9e454ab5b3cbf9037be24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioEthereal: {fileID: 1819763379}
+  audioReal: {fileID: 73533487}
+  audioSpeed: 5
+  audioClick: {fileID: 215933210}
 --- !u!1001 &455755488
 PrefabInstance:
   m_ObjectHideFlags: 0
