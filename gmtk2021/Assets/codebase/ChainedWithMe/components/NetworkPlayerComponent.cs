@@ -88,21 +88,7 @@ namespace ChainedWithMe {
                     (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime) + vToAdd.y,
                      (vInputData.y * -fSpeed * Time.deltaTime) + vToAdd.z));
             } else {
-                //Vector3 vData = Data.Value;
-                //CharController.Move(new Vector3(
-                //    (vData.x * -fSpeed * Time.deltaTime) + vToAdd.x,
-                //    (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime) + vToAdd.y,
-                //    (vData.y * -fSpeed * Time.deltaTime) + vToAdd.z));
-
                 setPosition(Position.Value);
-
-                //if (fTimer > 0.05f) {
-                //    float fDistance = Vector3.Distance(CharController.transform.position, Position.Value);
-                //    if (fDistance > 0.1f) {
-                //        fTimer = 0;
-                //        setPosition(Position.Value);
-                //    }
-                //}
             }
 
             if (IsServer) {
@@ -188,8 +174,6 @@ namespace ChainedWithMe {
         }
 
         private void Jump() {
-            fJumpTimer = 0;
-
             if (IsServer) {
                 JumpClientRpc();
             } else {
@@ -200,7 +184,7 @@ namespace ChainedWithMe {
 
         [ClientRpc]
         public void JumpClientRpc() {
-            fJumpTimer = 0;
+            GameManager.Instance.RealPlayer.fJumpTimer = 0;
 
             audioSource.clip = clipJump;
             audioSource.Play();
