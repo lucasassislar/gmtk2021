@@ -34,16 +34,18 @@ namespace ChainedWithMe {
                 return;
             }
 
-            NetworkPlayerComponent netPlayer = GameManager.Instance.RealPlayer;
+            if (NetworkManager.Singleton.IsHost) {
+                NetworkPlayerComponent netPlayer = GameManager.Instance.RealPlayer;
 
-            bool bIsIdle = false;
-            if (animator.GetCurrentAnimatorStateInfo(0).IsName("plat_vertical_idle")) {
-                bIsIdle = true;
-            }
+                bool bIsIdle = false;
+                if (animator.GetCurrentAnimatorStateInfo(0).IsName("plat_vertical_idle")) {
+                    bIsIdle = true;
+                }
 
-            if (trigger.InsideTrigger && netPlayer.Interacting) {
-                if (bIsIdle) {
-                    EnablePlatformClientRpc();
+                if (trigger.InsideTrigger && netPlayer.Interacting) {
+                    if (bIsIdle) {
+                        EnablePlatformClientRpc();
+                    }
                 }
             }
 

@@ -1,15 +1,16 @@
+using MLAPI;
+using MLAPI.Messaging;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace ChainedWithMe {
-    public class HorizontalPlatformComponent : MonoBehaviour {
+    public class HorizontalPlatformComponent : NetworkBehaviour {
         public float fMaxPlatformTime = 1;
 
         private Animator animator;
 
         private bool bInsideTrigger;
-        private bool bIsIdle;
         private float fTimeValue;
 
         private AudioSource audioSource;
@@ -28,40 +29,45 @@ namespace ChainedWithMe {
                 return;
             }
 
-            NetworkPlayerComponent netPlayer = GameManager.Instance.RealPlayer;
-            bool bIsGoingFoward = animator.GetBool("isGoingFoward");
+            if (NetworkManager.Singleton.IsHost) {
+                NetworkPlayerComponent netPlayer = GameManager.Instance.RealPlayer;
 
-            if (animator.GetCurrentAnimatorStateInfo(0).IsName("anim_plat_horizontal_back_idle")) {
-                bIsIdle = true;
-            } else {
-                bIsIdle = false;
-            }
+                bool bIsIdle;
+                if (animator.GetCurrentAnimatorStateInfo(0).IsName("anim_plat_horizontal_back_idle")) {
+                    bIsIdle = true;
+                } else {
+                    bIsIdle = false;
+                }
 
-            if (bInsideTrigger && netPlayer.Interacting) {
-                if (bIsIdle) {
-                    bIsGoingFoward = true;
-
-                    audioSource.clip = clipGoing;
-                    audioSource.Play();
-
-                    GameManager.Instance.AudioManager.PlayClick();
+                if (bInsideTrigger && netPlayer.Interacting) {
+                    if (bIsIdle) {
+                        EnablePlatformClientRpc();
+                    }
                 }
             }
 
+            bool bIsGoingFoward = animator.GetBool("isGoingFoward");
             if (bIsGoingFoward) {
                 fTimeValue -= Time.deltaTime;
 
                 if (fTimeValue <= 0) {
-                    bIsGoingFoward = false;
+                    animator.SetBool("isGoingFoward", false);
                     fTimeValue = fMaxPlatformTime;
 
                     audioSource.clip = clipComing;
                     audioSource.Play();
                 }
             }
+        }
 
+        [ClientRpc]
+        private void EnablePlatformClientRpc() {
+            animator.SetBool("isGoingFoward", true);
 
-            animator.SetBool("isGoingFoward", bIsGoingFoward);
+            audioSource.clip = clipGoing;
+            audioSource.Play();
+
+            GameManager.Instance.AudioManager.PlayClick();
         }
 
         private void OnTriggerEnter(Collider other) {

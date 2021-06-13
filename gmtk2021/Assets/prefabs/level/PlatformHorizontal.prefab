@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3889239069407542727}
   - component: {fileID: 316250660903085914}
   - component: {fileID: 1057655998}
+  - component: {fileID: 1267559012}
   m_Layer: 14
   m_Name: PlatformHorizontal
   m_TagString: Untagged
@@ -158,6 +159,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1267559012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3082311930592822984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NetworkInstanceId: 0
+  PrefabHash: 3747151754378139136
+  PrefabHashGenerator: PlatformHorizontal
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
 --- !u!1001 &3082311930021727916
 PrefabInstance:
   m_ObjectHideFlags: 0
