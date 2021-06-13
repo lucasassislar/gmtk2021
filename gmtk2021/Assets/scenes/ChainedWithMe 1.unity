@@ -189,15 +189,7 @@ Transform:
   - {fileID: 2097308303}
   - {fileID: 1436091626}
   - {fileID: 1759732586}
-<<<<<<< HEAD
   - {fileID: 1521117111}
-=======
-<<<<<<< HEAD
-  - {fileID: 1521117111}
-=======
->>>>>>> cd2cfb839a9b64194e335ba1fe96abc01240e4c5
->>>>>>> 5dc9d422eca1b866bfd4a48b41781eb849599256
->>>>>>> c8714cbc060f83a9629255d8a32014af452014ef
   m_Father: {fileID: 839914951}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
