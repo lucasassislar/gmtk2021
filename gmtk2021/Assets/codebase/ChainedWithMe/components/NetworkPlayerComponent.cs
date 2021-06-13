@@ -119,13 +119,14 @@ namespace ChainedWithMe {
             fJumpTimer += Time.deltaTime;
 
             Interacting = false;
+
             if (IsOwner) {
                 float fHor = Input.GetAxisRaw("Horizontal");
                 float fVer = Input.GetAxisRaw("Vertical");
 
                 vInputData = new Vector2(fHor, fVer);
 
-                if (this == GameManager.Instance.RealPlayer) {
+                if (this == GameManager.Instance.EtherealPlayer) {
                     if (fJumpTimer > fJumpTime) {
                         if (CharController.isGrounded) {
                             if (Input.GetKey(KeyCode.Space)) {
