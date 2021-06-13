@@ -6,13 +6,21 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ChainedWithMe.Level {
-    public class PortalComponent : MonoBehaviour {
+    public class PortalComponent : MonoBehaviour, IRestartable {
         public bool bDisabled;
 
         private AudioSource audioSource;
 
+        private bool bStartDisabled;
         private void Start() {
             audioSource = GetComponent<AudioSource>();
+
+            GameManager.Instance.RegisterRestartable(this);
+            bStartDisabled = bDisabled;
+        }
+
+        public void Restart() {
+            bDisabled = bStartDisabled;
         }
 
         private void OnTriggerEnter(Collider other) {

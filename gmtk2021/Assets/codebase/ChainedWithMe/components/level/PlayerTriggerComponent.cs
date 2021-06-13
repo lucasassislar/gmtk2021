@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ChainedWithMe{ 
-    public class AutoDoorTriggerComponent : MonoBehaviour {
+    public class PlayerTriggerComponent : MonoBehaviour {
         public bool InsideTrigger { get; private set; }
 
         private void OnTriggerEnter(Collider other) {

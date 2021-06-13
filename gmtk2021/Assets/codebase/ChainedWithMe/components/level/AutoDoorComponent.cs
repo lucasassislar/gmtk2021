@@ -14,14 +14,14 @@ namespace ChainedWithMe {
 
         private AudioSource audioSource;
 
-        private AutoDoorTriggerComponent trigger;
+        private PlayerTriggerComponent trigger;
 
         void Start() {
             animator = GetComponentInChildren<Animator>();
-            fTimeValue = fMaxPlatformTime;
-
             audioSource = GetComponentInChildren<AudioSource>();
-            trigger = GetComponentInChildren<AutoDoorTriggerComponent>();
+            trigger = GetComponentInChildren<PlayerTriggerComponent>();
+
+            fTimeValue = fMaxPlatformTime;
         }
 
         void Update() {
@@ -36,7 +36,7 @@ namespace ChainedWithMe {
                 if (animator.GetCurrentAnimatorStateInfo(0).IsName("door_closed")) {
                     bIsIdle = true;
                 }
-
+                
                 if (trigger.InsideTrigger && netPlayer.Interacting) {
                     if (bIsIdle) {
                         OpenDoorClientRpc();
@@ -53,7 +53,6 @@ namespace ChainedWithMe {
                     fTimeValue = fMaxPlatformTime;
                 }
             }
-
         }
 
         [ClientRpc]

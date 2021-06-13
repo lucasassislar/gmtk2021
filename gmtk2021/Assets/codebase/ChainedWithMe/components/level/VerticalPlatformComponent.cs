@@ -1,16 +1,16 @@
 using ChainedWithMe;
 using MLAPI;
+using MLAPI.Messaging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace ChainedWithMe {
-    public class VerticalPlatformComponent : MonoBehaviour {
+    public class VerticalPlatformComponent : NetworkBehaviour {
         public float fMaxPlatformTime = 5;
 
         private float fTimeValue;
-        private bool bInsideTrigger;
         private Animator animator;
 
         private AudioSource audioSource;
@@ -18,11 +18,15 @@ namespace ChainedWithMe {
         public AudioClip clipGoing;
         public AudioClip clipComing;
 
+        private PlayerTriggerComponent trigger;
+
         private void Start() {
-            animator = GetComponent<Animator>();
+            animator = GetComponentInChildren<Animator>();
+            audioSource = GetComponentInChildren<AudioSource>();
+            trigger = GetComponentInChildren<PlayerTriggerComponent>();
+
             fTimeValue = fMaxPlatformTime;
 
-            audioSource = GetComponent<AudioSource>();
         }
 
         private void Update() {
@@ -30,54 +34,43 @@ namespace ChainedWithMe {
                 return;
             }
 
-            NetworkPlayerComponent netPlayer = GameManager.Instance.RealPlayer;
-            bool bIsGoingUp = animator.GetBool("isGoingUp");
+            if (NetworkManager.Singleton.IsHost) {
+                NetworkPlayerComponent netPlayer = GameManager.Instance.RealPlayer;
 
-            bool bIsIdle = false;
-            if (animator.GetCurrentAnimatorStateInfo(0).IsName("plat_vertical_idle")) {
-                bIsIdle = true;
-            }
+                bool bIsIdle = false;
+                if (animator.GetCurrentAnimatorStateInfo(0).IsName("plat_vertical_idle")) {
+                    bIsIdle = true;
+                }
 
-            if (bInsideTrigger && netPlayer.Interacting) {
-                if (bIsIdle) {
-                    bIsGoingUp = true;
-
-                    audioSource.clip = clipGoing;
-                    audioSource.Play();
-
-                    GameManager.Instance.AudioManager.PlayClick();
+                if (trigger.InsideTrigger && netPlayer.Interacting) {
+                    if (bIsIdle) {
+                        EnablePlatformClientRpc();
+                    }
                 }
             }
 
+            bool bIsGoingUp = animator.GetBool("isGoingUp");
             if (bIsGoingUp) {
                 fTimeValue -= Time.deltaTime;
 
                 if (fTimeValue <= 0) {
-                    bIsGoingUp = false;
+                    animator.SetBool("isGoingUp", false);
                     fTimeValue = fMaxPlatformTime;
 
                     audioSource.clip = clipComing;
                     audioSource.Play();
                 }
             }
-
-            animator.SetBool("isGoingUp", bIsGoingUp);
         }
 
-        private void OnTriggerEnter(Collider other) {
-            if (other.gameObject.layer != LayerMask.NameToLayer("Player")) {
-                return;
-            }
+        [ClientRpc]
+        private void EnablePlatformClientRpc() {
+            animator.SetBool("isGoingUp", true);
 
-            bInsideTrigger = true;
-        }
+            audioSource.clip = clipGoing;
+            audioSource.Play();
 
-        private void OnTriggerExit(Collider other) {
-            if (other.gameObject.layer != LayerMask.NameToLayer("Player")) {
-                return;
-            }
-
-            bInsideTrigger = false;
+            GameManager.Instance.AudioManager.PlayClick();
         }
     }
 }

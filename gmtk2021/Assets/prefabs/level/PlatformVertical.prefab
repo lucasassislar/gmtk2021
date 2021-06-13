@@ -96,6 +96,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &128600817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1179983455241681107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1525dfa318383274fb6b597b052b8895, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4652480568240534468
 GameObject:
   m_ObjectHideFlags: 0
@@ -105,6 +117,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4652480568240534469}
+  - component: {fileID: 23576748}
+  - component: {fileID: 23576749}
   m_Layer: 14
   m_Name: PlatformVertical
   m_TagString: Untagged
@@ -127,6 +141,38 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &23576748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4652480568240534468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NetworkInstanceId: 0
+  PrefabHash: 9185276028294125166
+  PrefabHashGenerator: PlatformVertical
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+--- !u!114 &23576749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4652480568240534468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8f5746eaa358614ab359ea263b3d465, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fMaxPlatformTime: 5
+  clipGoing: {fileID: 8300000, guid: 42848b96e31f38448babcf824f7501ca, type: 3}
+  clipComing: {fileID: 8300000, guid: ac26a503384c41846961a711c70d121d, type: 3}
 --- !u!1001 &4652480568932183088
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -190,7 +236,8 @@ PrefabInstance:
       propertyPath: clipComing
       value: 
       objectReference: {fileID: 8300000, guid: ac26a503384c41846961a711c70d121d, type: 3}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6643270213167759712, guid: 0d49e61e3f32bcb4a898a5eaff7e010b, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0d49e61e3f32bcb4a898a5eaff7e010b, type: 3}
 --- !u!1 &1179983455241681107 stripped
 GameObject:
