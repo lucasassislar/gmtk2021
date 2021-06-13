@@ -80,9 +80,9 @@ namespace ChainedWithMe {
                     (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime) + vToAdd.y,
                     (vData.y * -fSpeed * Time.deltaTime) + vToAdd.z));
 
-                if (fTimer > 0.25f) {
+                if (fTimer > 0.05f) {
                     float fDistance = Vector3.Distance(CharController.transform.position, Position.Value);
-                    if (fDistance > 0.25f) {
+                    if (fDistance > 0.1f) {
                         fTimer = 0;
                         setPosition(Position.Value);
                     }
