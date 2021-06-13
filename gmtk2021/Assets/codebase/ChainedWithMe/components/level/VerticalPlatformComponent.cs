@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ChainedWithMe {
+namespace ChainedWithMe.Level {
     public class VerticalPlatformComponent : NetworkBehaviour {
         public float fMaxPlatformTime = 5;
 
@@ -26,30 +26,27 @@ namespace ChainedWithMe {
             trigger = GetComponentInChildren<PlayerTriggerComponent>();
 
             fTimeValue = fMaxPlatformTime;
-
         }
 
         private void Update() {
-            if (GameManager.Instance.RealPlayer == null) {
-                return;
-            }
+            bool bIsGoingUp = animator.GetBool("isGoingUp");
 
-            if (NetworkManager.Singleton.IsHost) {
-                NetworkPlayerComponent netPlayer = GameManager.Instance.RealPlayer;
+            if (IsServer) {
+                if (fTimeValue > 0) {
+                    if (animator.GetCurrentAnimatorStateInfo(0).IsName("plat_vertical_idle")) {
+                        if (trigger.InsideTrigger && trigger.Interacting) {
+                            trigger.HandledInteract();
 
-                bool bIsIdle = false;
-                if (animator.GetCurrentAnimatorStateInfo(0).IsName("plat_vertical_idle")) {
-                    bIsIdle = true;
-                }
+                            EnablePlatformClientRpc();
+                        }
+                    }
 
-                if (trigger.InsideTrigger && netPlayer.Interacting) {
-                    if (bIsIdle) {
-                        EnablePlatformClientRpc();
+                    if (bIsGoingUp) {
+                        trigger.HandledInteract();
                     }
                 }
             }
 
-            bool bIsGoingUp = animator.GetBool("isGoingUp");
             if (bIsGoingUp) {
                 fTimeValue -= Time.deltaTime;
 

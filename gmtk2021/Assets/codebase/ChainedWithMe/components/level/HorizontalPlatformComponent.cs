@@ -4,13 +4,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ChainedWithMe {
+namespace ChainedWithMe.Level {
     public class HorizontalPlatformComponent : NetworkBehaviour {
         public float fMaxPlatformTime = 1;
 
         private Animator animator;
 
-        private bool bInsideTrigger;
         private float fTimeValue;
 
         private AudioSource audioSource;
@@ -18,35 +17,35 @@ namespace ChainedWithMe {
         public AudioClip clipGoing;
         public AudioClip clipComing;
 
+        private PlayerTriggerComponent trigger;
+
         private void Start() {
             animator = GetComponentInChildren<Animator>();
+            trigger = GetComponent<PlayerTriggerComponent>();
 
             audioSource = GetComponent<AudioSource>();
+            fTimeValue = fMaxPlatformTime;
         }
 
         private void Update() {
-            if (GameManager.Instance.RealPlayer == null) {
-                return;
-            }
+            bool bIsGoingFoward = animator.GetBool("isGoingFoward");
 
-            if (NetworkManager.Singleton.IsHost) {
-                NetworkPlayerComponent netPlayer = GameManager.Instance.RealPlayer;
+            if (IsServer) {
+                if (fTimeValue > 0) {
+                    if (animator.GetCurrentAnimatorStateInfo(0).IsName("anim_plat_horizontal_back_idle")) {
+                        if (trigger.InsideTrigger && trigger.Interacting) {
+                            trigger.HandledInteract();
 
-                bool bIsIdle;
-                if (animator.GetCurrentAnimatorStateInfo(0).IsName("anim_plat_horizontal_back_idle")) {
-                    bIsIdle = true;
-                } else {
-                    bIsIdle = false;
-                }
+                            EnablePlatformClientRpc();
+                        }
+                    }
 
-                if (bInsideTrigger && netPlayer.Interacting) {
-                    if (bIsIdle) {
-                        EnablePlatformClientRpc();
+                    if (bIsGoingFoward) {
+                        trigger.HandledInteract();
                     }
                 }
             }
 
-            bool bIsGoingFoward = animator.GetBool("isGoingFoward");
             if (bIsGoingFoward) {
                 fTimeValue -= Time.deltaTime;
 
@@ -68,22 +67,6 @@ namespace ChainedWithMe {
             audioSource.Play();
 
             GameManager.Instance.AudioManager.PlayClick();
-        }
-
-        private void OnTriggerEnter(Collider other) {
-            if (other.gameObject.layer != LayerMask.NameToLayer("Player")) {
-                return;
-            }
-
-            bInsideTrigger = true;
-        }
-
-        private void OnTriggerExit(Collider other) {
-            if (other.gameObject.layer != LayerMask.NameToLayer("Player")) {
-                return;
-            }
-
-            bInsideTrigger = false;
         }
     }
 }
