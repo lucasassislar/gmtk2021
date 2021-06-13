@@ -26,6 +26,7 @@ namespace ChainedWithMe {
 
         public NetworkPlayerComponent RealPlayer { get; private set; }
         public NetworkPlayerComponent EtherealPlayer { get; private set; }
+        public AudioManager AudioManager { get; private set; }
 
         public int ClientLayerMask { get; private set; }
         public bool ClientEthereal { get { return !bIsEthereal; } }
@@ -99,6 +100,7 @@ namespace ChainedWithMe {
 
             Instance = this;
             CameraManager = GetComponent<CameraManager>();
+            AudioManager = GetComponentInChildren<AudioManager>();
 
             objOverlay.SetActive(true);
 
@@ -183,6 +185,8 @@ namespace ChainedWithMe {
 
                 UpdateLayer();
             }
+
+            AudioManager.StartGame();
         }
 
         public void RegisterRestartable(IRestartable restartable) {
