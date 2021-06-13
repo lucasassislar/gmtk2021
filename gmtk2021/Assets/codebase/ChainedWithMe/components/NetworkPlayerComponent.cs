@@ -28,6 +28,8 @@ namespace ChainedWithMe {
 
         public CharacterController CharController { get; private set; }
 
+        public bool Interacting { get; private set; }
+
         public NetworkVariableVector2 Data = new NetworkVariableVector2(new NetworkVariableSettings {
             WritePermission = NetworkVariablePermission.Everyone,
             ReadPermission = NetworkVariablePermission.Everyone
@@ -58,15 +60,19 @@ namespace ChainedWithMe {
             }
 
             float fGravity = Physics.gravity.y;
+
+            Vector3 vToAdd = new Vector3();
             if (IsOwner) {
-                CharController.Move(new Vector3(vInputData.x * -fSpeed * Time.deltaTime,
-                    (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime),
-                    vInputData.y * -fSpeed * Time.deltaTime));
+                CharController.Move(new Vector3(
+                    (vInputData.x * -fSpeed * Time.deltaTime) + vToAdd.x,
+                    (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime) + vToAdd.y,
+                     (vInputData.y * -fSpeed * Time.deltaTime) + vToAdd.z));
             } else {
                 Vector3 vData = Data.Value;
-                CharController.Move(new Vector3(vData.x * -fSpeed * Time.deltaTime,
-                    (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime),
-                    vData.y * -fSpeed * Time.deltaTime));
+                CharController.Move(new Vector3(
+                    (vData.x * -fSpeed * Time.deltaTime) + vToAdd.x,
+                    (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime) + vToAdd.y,
+                    (vData.y * -fSpeed * Time.deltaTime) + vToAdd.z));
             }
 
             if (IsServer) {
@@ -82,8 +88,6 @@ namespace ChainedWithMe {
 
         private void RunOnServer() {
             SendPosClientRpc();
-
-
         }
 
         private void RunOnClient() {
@@ -108,16 +112,21 @@ namespace ChainedWithMe {
 
             if (IsOwner) {
                 float fHor = Input.GetAxisRaw("Horizontal");
-                float fVer = Input.GetAxisRaw("Vertical");                
+                float fVer = Input.GetAxisRaw("Vertical");
 
                 vInputData = new Vector2(fHor, fVer);
             }
 
             if (this == GameManager.Instance.RealPlayer) {
                 if (fJumpTimer > fJumpTime) {
-                    if (Input.GetKeyDown(KeyCode.Space)) {
+                    if (Input.GetKey(KeyCode.Space)) {
                         Jump();
                     }
+                }
+
+                Interacting = false;
+                if (Input.GetKey(KeyCode.E)) {
+                    Interact();
                 }
             }
 
@@ -127,6 +136,24 @@ namespace ChainedWithMe {
                 GameManager gameManager = GameManager.Instance;
                 SendClientVersionClientRpc(gameManager.ClientEthereal, gameManager.ClientLayerMask);
             }
+        }
+
+        private void Interact() {
+            if (IsServer) {
+                InteractClientRpc();
+            } else {
+                InteractServerRpc();
+            }
+        }
+
+        [ClientRpc]
+        public void InteractClientRpc() {
+            Interacting = true;
+        }
+
+        [ServerRpc]
+        public void InteractServerRpc() {
+            Interacting = true;
         }
 
         private void Jump() {
