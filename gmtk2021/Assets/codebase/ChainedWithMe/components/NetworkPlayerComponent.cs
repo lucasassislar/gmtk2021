@@ -142,10 +142,8 @@ namespace ChainedWithMe {
 
                 if (this == GameManager.Instance.EtherealPlayer) {
                     if (fJumpTimer > fJumpTime) {
-                        if (CharController.isGrounded) {
-                            if (Input.GetKeyDown(KeyCode.Space)) {
-                                Jump();
-                            }
+                        if (Input.GetKeyDown(KeyCode.Space)) {
+                            Jump();
                         }
                     }
 
@@ -190,12 +188,15 @@ namespace ChainedWithMe {
         }
 
         private void Jump() {
+            fJumpTimer = 0;
+
             if (IsServer) {
                 JumpClientRpc();
             } else {
                 JumpServerRpc();
             }
         }
+
 
         [ClientRpc]
         public void JumpClientRpc() {
@@ -207,7 +208,7 @@ namespace ChainedWithMe {
 
         [ServerRpc]
         public void JumpServerRpc() {
-            fJumpTimer = 0;
+            GameManager.Instance.RealPlayer.fJumpTimer = 0;
 
             audioSource.clip = clipJump;
             audioSource.Play();
