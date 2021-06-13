@@ -125,6 +125,10 @@ namespace ChainedWithMe {
             }
         }
 
+        private void OnDestroy() {
+            NetworkManager.Singleton.OnClientConnectedCallback -= Singleton_OnClientConnectedCallback;
+        }
+
         private void Update() {
             if (RealPlayer != null) {
                 if (RealPlayer.CharController.transform.position.y < objKillBox.transform.position.y) {
@@ -133,6 +137,17 @@ namespace ChainedWithMe {
                 }
             }
 
+            if (Input.GetKeyDown(KeyCode.Escape)) {
+                End();
+
+                if (NetworkManager.Singleton.IsServer) {
+                    NetworkManager.Singleton.StopServer();
+                }
+
+                if (NetworkManager.Singleton.IsClient) {
+                    NetworkManager.Singleton.StopClient();
+                }
+            }
         }
 
         private void Singleton_OnClientConnectedCallback(ulong obj) {
