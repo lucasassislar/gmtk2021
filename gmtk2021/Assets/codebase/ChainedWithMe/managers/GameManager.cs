@@ -116,6 +116,11 @@ namespace ChainedWithMe {
             restartables = new List<IRestartable>();
 
             NetworkManager.Singleton.OnClientConnectedCallback += Singleton_OnClientConnectedCallback;
+
+            if (Globals.IsHost) {
+                StartGame(true);
+                NetworkManager.Singleton.StartHost();
+            }
         }
 
         private void Update() {
