@@ -37,6 +37,9 @@ namespace ChainedWithMe {
         public AudioClip clipGoing;
         public AudioClip clipComing;
 
+        public Material realSkybox;
+        public Material etherealSkybox;
+
         private AudioSource viewSource;
 
         public bool IsEthereal {
@@ -53,8 +56,6 @@ namespace ChainedWithMe {
             }
         }
 
-
-
         public void SwapView(AudioSource source) {
             viewSource = source;
             if (!NetworkManager.Singleton.IsHost) {
@@ -65,6 +66,8 @@ namespace ChainedWithMe {
 
             bIsEthereal = !bIsEthereal;
             UpdateLayer();
+
+            RenderSettings.skybox = bIsEthereal ? etherealSkybox : realSkybox;
 
             Vector3 vPos = RealPlayer.CharController.transform.position;
 
@@ -222,6 +225,8 @@ namespace ChainedWithMe {
             camera.cullingMask = nLayerMask;
             this.bIsEthereal = bIsEthereal;
 
+            RenderSettings.skybox = bIsEthereal ? etherealSkybox : realSkybox;
+
             objOverlay.SetActive(false);
 
             if (viewSource != null) {
@@ -240,6 +245,8 @@ namespace ChainedWithMe {
             if (bIsHost) {
                 bIsEthereal = Random.Range(0, 100) > 50;
                 bIsEthereal = true;
+
+                RenderSettings.skybox = bIsEthereal ? etherealSkybox : realSkybox;
 
                 objOverlay.SetActive(false);
 

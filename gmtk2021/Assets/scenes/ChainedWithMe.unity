@@ -179,6 +179,7 @@ Transform:
   - {fileID: 964001998}
   - {fileID: 803566668}
   - {fileID: 1330765375}
+  - {fileID: 655583603}
   - {fileID: 763590380}
   - {fileID: 1282373214}
   - {fileID: 1533836413}
@@ -191,7 +192,6 @@ Transform:
   - {fileID: 1321376874}
   - {fileID: 1384803397}
   - {fileID: 773685654}
-  - {fileID: 655583603}
   - {fileID: 1174298021}
   m_Father: {fileID: 839914951}
   m_RootOrder: 7
@@ -1673,6 +1673,8 @@ MonoBehaviour:
   objKillBox: {fileID: 282553876}
   clipGoing: {fileID: 8300000, guid: 94d9e4e7da1916c4b9b7239f8ac3194d, type: 3}
   clipComing: {fileID: 8300000, guid: 8f9916e3ae805084f909ae30f3493b82, type: 3}
+  realSkybox: {fileID: 2100000, guid: 6fc9cc90f90b97148b9da287b303c910, type: 2}
+  etherealSkybox: {fileID: 2100000, guid: 53b2a00bcc3cd77459618c05895f161f, type: 2}
 --- !u!114 &408010742
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2391,7 +2393,7 @@ Transform:
   m_Children:
   - {fileID: 1537663724}
   m_Father: {fileID: 31096847}
-  m_RootOrder: 36
+  m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1001 &660256582
 PrefabInstance:
