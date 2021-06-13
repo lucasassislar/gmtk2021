@@ -88,7 +88,7 @@ namespace ChainedWithMe {
             if (this == GameManager.Instance.EtherealPlayer) {
 
             } else if (this == GameManager.Instance.RealPlayer) {
-                if(IsOwner){
+                if (IsOwner) {
                     CharController.enabled = true;
                     Sphere.enabled = false;
 
@@ -109,6 +109,32 @@ namespace ChainedWithMe {
                     //SetPosition(Position.Value);
                 }
             }
+        }
+
+        private void teleport(Vector3 vNewPos) {
+            if (IsOwner) {
+                SetPosition(vNewPos);
+            } else {
+                Sphere.transform.position = vNewPos;
+            }
+        }
+
+        public void Teleport(Vector3 vNewPos) {
+            if (IsServer) {
+                TeleportClientRpc(vNewPos);
+            } else {
+                TeleportServerRpc(vNewPos);
+            }
+        }
+
+        [ClientRpc]
+        private void TeleportClientRpc(Vector3 vNewPos) {
+            teleport(vNewPos);
+        }
+
+        [ServerRpc]
+        private void TeleportServerRpc(Vector3 vNewPos) {
+            teleport(vNewPos);
         }
 
         private void Update() {
