@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/scenes/IntroScene.unity
     guid: 5aa7371f53b7d79468a069eb79a95dc2
   - enabled: 1
+    path: Assets/scenes/MainMenu.unity
+    guid: 10f938d2a162ec447a62cd432c5ab3fb
+  - enabled: 1
     path: Assets/scenes/ChainedWithMe.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}
