@@ -3,6 +3,7 @@ using MLAPI.Connection;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ChainedWithMe {
     public class GameManager : MonoBehaviour {
@@ -121,12 +122,15 @@ namespace ChainedWithMe {
                 StartGame(true);
                 NetworkManager.Singleton.StartHost();
             } else {
+                StartGame(false);
                 NetworkManager.Singleton.StartClient();
             }
         }
 
         private void OnDestroy() {
-            NetworkManager.Singleton.OnClientConnectedCallback -= Singleton_OnClientConnectedCallback;
+            if (NetworkManager.Singleton != null) {
+                NetworkManager.Singleton.OnClientConnectedCallback -= Singleton_OnClientConnectedCallback;
+            }
         }
 
         private void Update() {
@@ -147,6 +151,8 @@ namespace ChainedWithMe {
                 if (NetworkManager.Singleton.IsClient) {
                     NetworkManager.Singleton.StopClient();
                 }
+
+                SceneManager.LoadScene("MainMenu");
             }
         }
 
