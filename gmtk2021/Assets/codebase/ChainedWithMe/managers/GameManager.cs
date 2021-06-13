@@ -15,6 +15,7 @@ namespace ChainedWithMe {
         public Camera camera;
 
         public GameObject objOverlay;
+        public GameObject objKillBox;
 
         private bool bIsHost;
         private bool bIsEthereal;
@@ -25,20 +26,97 @@ namespace ChainedWithMe {
 
         public NetworkPlayerComponent RealPlayer { get; private set; }
         public NetworkPlayerComponent EtherealPlayer { get; private set; }
+        public AudioManager AudioManager { get; private set; }
+
+        public int ClientLayerMask { get; private set; }
+        public bool ClientEthereal { get { return !bIsEthereal; } }
+
+        public List<NetworkPlayerComponent> Players { get; private set; }
 
         public bool IsEthereal {
             get { return bIsEthereal; }
         }
 
-        void Start() {
+        private void UpdateLayer() {
+            if (bIsEthereal) {
+                camera.cullingMask = CameraManager.layerEthereal;
+                ClientLayerMask = CameraManager.layerReal;
+            } else {
+                camera.cullingMask = CameraManager.layerReal;
+                ClientLayerMask = CameraManager.layerEthereal;
+            }
+        }
+
+        public void SwapView() {
+            List<NetworkPlayerComponent> netPlayers = Players;
+
+            bIsEthereal = !bIsEthereal;
+            UpdateLayer();
+
+            Vector3 vPos = RealPlayer.CharController.transform.position;
+
+            EtherealPlayer = null;
+            RealPlayer = null;
+
+            for (int i = 0; i < netPlayers.Count; i++) {
+                NetworkPlayerComponent player = netPlayers[i];
+
+                if (player.IsOwner) {
+                    if (bIsEthereal) {
+                        EtherealPlayer = player;
+                    } else {
+                        RealPlayer = player;
+                    }
+                } else {
+                    player.SendClientVersionClientRpc(ClientEthereal, ClientLayerMask);
+
+                    if (bIsEthereal) {
+                        RealPlayer = player;
+                    } else {
+                        EtherealPlayer = player;
+                    }
+                }
+            }
+
+            if (EtherealPlayer != null) {
+                EtherealPlayer.HidePlayerClientRpc();
+            }
+
+            if (RealPlayer != null) {
+                RealPlayer.ShowPlayerClientRpc(vPos);
+            }
+
+        }
+
+        public void ClientSwapView() {
+            List<NetworkPlayerComponent> netPlayers = Players;
+            for (int i = 0; i < netPlayers.Count; i++) {
+                NetworkPlayerComponent player = netPlayers[i];
+            }
+        }
+
+        private void Start() {
+            Players = new List<NetworkPlayerComponent>();
+
             Instance = this;
             CameraManager = GetComponent<CameraManager>();
+            AudioManager = GetComponentInChildren<AudioManager>();
 
             objOverlay.SetActive(true);
 
             restartables = new List<IRestartable>();
 
             NetworkManager.Singleton.OnClientConnectedCallback += Singleton_OnClientConnectedCallback;
+        }
+
+        private void Update() {
+            if (RealPlayer != null) {
+                if (RealPlayer.CharController.transform.position.y < objKillBox.transform.position.y) {
+                    // death
+                    Restart();
+                }
+            }
+
         }
 
         private void Singleton_OnClientConnectedCallback(ulong obj) {
@@ -72,6 +150,24 @@ namespace ChainedWithMe {
                 return;
             }
 
+            for (int i = 0; i < Players.Count; i++) {
+                NetworkPlayerComponent netPlayer = Players[i];
+
+                if (netPlayer.IsOwner) {
+                    if (bIsEthereal) {
+                        EtherealPlayer = netPlayer;
+                    } else {
+                        RealPlayer = netPlayer;
+                    }
+                } else {
+                    if (bIsEthereal) {
+                        RealPlayer = netPlayer;
+                    } else {
+                        EtherealPlayer = netPlayer;
+                    }
+                }
+            }
+
             camera.cullingMask = nLayerMask;
             this.bIsEthereal = bIsEthereal;
 
@@ -87,12 +183,10 @@ namespace ChainedWithMe {
 
                 objOverlay.SetActive(false);
 
-                if (bIsEthereal) {
-                    camera.cullingMask = CameraManager.layerEthereal;
-                } else {
-                    camera.cullingMask = CameraManager.layerReal;
-                }
+                UpdateLayer();
             }
+
+            AudioManager.StartGame();
         }
 
         public void RegisterRestartable(IRestartable restartable) {
@@ -105,6 +199,8 @@ namespace ChainedWithMe {
         }
 
         public void Restart() {
+            Players.Clear();
+
             bIsFirst = true;
 
             for (int i = 0; i < restartables.Count; i++) {
@@ -117,6 +213,7 @@ namespace ChainedWithMe {
         }
 
         public void StartGame(NetworkPlayerComponent netPlayer) {
+            Players.Add(netPlayer);
             if (bIsHost) {
                 if (bIsFirst) {
                     bIsFirst = false;
