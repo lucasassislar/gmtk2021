@@ -12,8 +12,15 @@ namespace ChainedWithMe {
 
         public float audioSpeed = 5;
 
+        public AudioSource audioClick;
+
         private void Start() {
-            
+            audioEthereal.volume = 0;
+            audioReal.volume = 0;
+        }
+
+        public void PlayClick() {
+            audioClick.Play();
         }
 
         public void StartGame() {

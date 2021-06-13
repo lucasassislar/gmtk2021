@@ -10,10 +10,14 @@ namespace ChainedWithMe {
         private bool bInsideTrigger;
         private Animator animator;
 
+        private AudioSource audioSource;
+
         // Start is called before the first frame update
         void Start() {
             animator = GetComponent<Animator>();
             fTimeValue = fMaxPlatformTime;
+
+            audioSource = GetComponent<AudioSource>();
         }
 
         // Update is called once per frame
@@ -33,6 +37,9 @@ namespace ChainedWithMe {
             if (bInsideTrigger && netPlayer.Interacting) {
                 if (bIsIdle) {
                     bIsOpened = true;
+                    audioSource.Play();
+
+                    GameManager.Instance.AudioManager.PlayClick();
                 }
             }
 
