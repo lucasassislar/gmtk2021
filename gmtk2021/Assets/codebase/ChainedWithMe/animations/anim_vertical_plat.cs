@@ -34,6 +34,7 @@ public class anim_vertical_plat : MonoBehaviour {
             timeValue -= Time.deltaTime;
         }
 
+
         if (isGoingUp && timeValue <= 0) {
             isGoingUp = false;
             timeValue = 5;
