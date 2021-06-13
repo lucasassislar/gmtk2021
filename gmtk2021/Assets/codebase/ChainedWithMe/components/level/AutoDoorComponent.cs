@@ -1,9 +1,11 @@
+using MLAPI;
+using MLAPI.Messaging;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace ChainedWithMe {
-    public class AutoDoorComponent : MonoBehaviour {
+    public class AutoDoorComponent : NetworkBehaviour {
         public float fMaxPlatformTime = 2;
 
         private float fTimeValue;
@@ -12,61 +14,54 @@ namespace ChainedWithMe {
 
         private AudioSource audioSource;
 
-        // Start is called before the first frame update
+        private AutoDoorTriggerComponent trigger;
+
         void Start() {
-            animator = GetComponent<Animator>();
+            animator = GetComponentInChildren<Animator>();
             fTimeValue = fMaxPlatformTime;
 
-            audioSource = GetComponent<AudioSource>();
+            audioSource = GetComponentInChildren<AudioSource>();
+            trigger = GetComponentInChildren<AutoDoorTriggerComponent>();
         }
 
-        // Update is called once per frame
         void Update() {
             if (GameManager.Instance.RealPlayer == null) {
                 return;
             }
 
-            NetworkPlayerComponent netPlayer = GameManager.Instance.RealPlayer;
-            bool bIsOpened = animator.GetBool("isOpened");
+            if (NetworkManager.Singleton.IsHost) {
+                NetworkPlayerComponent netPlayer = GameManager.Instance.RealPlayer;
 
-            bool bIsIdle = false;
-            if (animator.GetCurrentAnimatorStateInfo(0).IsName("door_closed")) {
-                bIsIdle = true;
-            }
+                bool bIsIdle = false;
+                if (animator.GetCurrentAnimatorStateInfo(0).IsName("door_closed")) {
+                    bIsIdle = true;
+                }
 
-            if (bInsideTrigger && netPlayer.Interacting) {
-                if (bIsIdle) {
-                    bIsOpened = true;
-                    audioSource.Play();
-
-                    GameManager.Instance.AudioManager.PlayClick();
+                if (trigger.InsideTrigger && netPlayer.Interacting) {
+                    if (bIsIdle) {
+                        OpenDoorClientRpc();
+                    }
                 }
             }
 
+            bool bIsOpened = animator.GetBool("isOpened");
             if (bIsOpened) {
                 fTimeValue -= Time.deltaTime;
 
                 if (fTimeValue <= 0) {
-                    bIsOpened = false;
+                    animator.SetBool("isOpened", false);
                     fTimeValue = fMaxPlatformTime;
                 }
             }
 
-            animator.SetBool("isOpened", bIsOpened);
         }
 
-        private void OnTriggerEnter(Collider other) {
-            if (other.gameObject.layer != LayerMask.NameToLayer("Player")) {
-                return;
-            }
-            bInsideTrigger = true;
-        }
+        [ClientRpc]
+        private void OpenDoorClientRpc() {
+            animator.SetBool("isOpened", true);
+            audioSource.Play();
 
-        private void OnTriggerExit(Collider other) {
-            if (other.gameObject.layer != LayerMask.NameToLayer("Player")) {
-                return;
-            }
-            bInsideTrigger = false;
+            GameManager.Instance.AudioManager.PlayClick();
         }
     }
 }

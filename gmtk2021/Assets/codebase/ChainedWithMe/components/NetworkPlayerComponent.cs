@@ -118,25 +118,25 @@ namespace ChainedWithMe {
             fTimer += Time.deltaTime;
             fJumpTimer += Time.deltaTime;
 
+            Interacting = false;
             if (IsOwner) {
                 float fHor = Input.GetAxisRaw("Horizontal");
                 float fVer = Input.GetAxisRaw("Vertical");
 
                 vInputData = new Vector2(fHor, fVer);
-            }
 
-            if (this == GameManager.Instance.RealPlayer) {
-                if (fJumpTimer > fJumpTime) {
-                    if (CharController.isGrounded) {
-                        if (Input.GetKey(KeyCode.Space)) {
-                            Jump();
+                if (this == GameManager.Instance.RealPlayer) {
+                    if (fJumpTimer > fJumpTime) {
+                        if (CharController.isGrounded) {
+                            if (Input.GetKey(KeyCode.Space)) {
+                                Jump();
+                            }
                         }
                     }
-                }
 
-                Interacting = false;
-                if (Input.GetKey(KeyCode.E)) {
-                    Interact();
+                    if (Input.GetKey(KeyCode.E)) {
+                        Interact();
+                    }
                 }
             }
 

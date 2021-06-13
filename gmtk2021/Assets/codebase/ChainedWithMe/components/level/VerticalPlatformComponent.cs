@@ -46,7 +46,6 @@ namespace ChainedWithMe {
                     audioSource.Play();
 
                     GameManager.Instance.AudioManager.PlayClick();
-
                 }
             }
 

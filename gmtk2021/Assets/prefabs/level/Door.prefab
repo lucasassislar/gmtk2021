@@ -96,6 +96,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &2046806160420509095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1824703806204555408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1525dfa318383274fb6b597b052b8895, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6240303881670647017
 GameObject:
   m_ObjectHideFlags: 0
@@ -105,6 +117,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6240303881670647016}
+  - component: {fileID: 7480656111592790247}
+  - component: {fileID: 3715386633747822203}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -127,6 +141,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &7480656111592790247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6240303881670647017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c22b7d2af8d9ee340965dbd7deaaa78c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fMaxPlatformTime: 2
+--- !u!114 &3715386633747822203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6240303881670647017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NetworkInstanceId: 0
+  PrefabHash: 18376537500236548397
+  PrefabHashGenerator: Door
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
 --- !u!65 &1904288582
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -195,7 +239,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: obj_auto_door_closed
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4830617411443304528, guid: 0d73f097ab339ac469d9aa7380f243dc, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0d73f097ab339ac469d9aa7380f243dc, type: 3}
 --- !u!1 &1824703806204555408 stripped
 GameObject:
