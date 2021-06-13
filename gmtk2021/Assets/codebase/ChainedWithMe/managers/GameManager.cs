@@ -27,11 +27,17 @@ namespace ChainedWithMe {
         public NetworkPlayerComponent RealPlayer { get; private set; }
         public NetworkPlayerComponent EtherealPlayer { get; private set; }
 
+        public int ClientLayerMask { get; private set; }
+
+        public List<NetworkPlayerComponent> Players { get; private set; }
+
         public bool IsEthereal {
             get { return bIsEthereal; }
         }
 
-        void Start() {
+        private void Start() {
+            Players = new List<NetworkPlayerComponent>();
+
             Instance = this;
             CameraManager = GetComponent<CameraManager>();
 
@@ -49,6 +55,7 @@ namespace ChainedWithMe {
                     Restart();
                 }
             }
+
         }
 
         private void Singleton_OnClientConnectedCallback(ulong obj) {
@@ -82,6 +89,24 @@ namespace ChainedWithMe {
                 return;
             }
 
+            for (int i = 0; i < Players.Count; i++) {
+                NetworkPlayerComponent netPlayer = Players[i];
+
+                if (netPlayer.IsOwner) {
+                    if (bIsEthereal) {
+                        EtherealPlayer = netPlayer;
+                    } else {
+                        RealPlayer = netPlayer;
+                    }
+                } else {
+                    if (bIsEthereal) {
+                        RealPlayer = netPlayer;
+                    } else {
+                        EtherealPlayer = netPlayer;
+                    }
+                }
+            }
+
             camera.cullingMask = nLayerMask;
             this.bIsEthereal = bIsEthereal;
 
@@ -99,8 +124,10 @@ namespace ChainedWithMe {
 
                 if (bIsEthereal) {
                     camera.cullingMask = CameraManager.layerEthereal;
+                    ClientLayerMask = CameraManager.layerReal;
                 } else {
                     camera.cullingMask = CameraManager.layerReal;
+                    ClientLayerMask = CameraManager.layerEthereal;
                 }
             }
         }
@@ -115,6 +142,8 @@ namespace ChainedWithMe {
         }
 
         public void Restart() {
+            Players.Clear();
+
             bIsFirst = true;
 
             for (int i = 0; i < restartables.Count; i++) {
@@ -127,6 +156,7 @@ namespace ChainedWithMe {
         }
 
         public void StartGame(NetworkPlayerComponent netPlayer) {
+            Players.Add(netPlayer);
             if (bIsHost) {
                 if (bIsFirst) {
                     bIsFirst = false;

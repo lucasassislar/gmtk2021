@@ -129,8 +129,8 @@ namespace ChainedWithMe {
             if (!bSent) {
                 bSent = true;
 
-                //GameManager gameManager = GameManager.Instance;
-                //SendClientVersionClientRpc(gameManager.IsLegs, gameManager.ClientLayerMask);
+                GameManager gameManager = GameManager.Instance;
+                SendClientVersionClientRpc(!gameManager.IsEthereal, gameManager.ClientLayerMask);
             }
         }
 
@@ -160,8 +160,8 @@ namespace ChainedWithMe {
         }
 
         [ClientRpc]
-        public void SendClientVersionClientRpc(bool bIsLegs, int nLayerMask) {
-            GameManager.Instance.ReceiveLayer(bIsLegs, nLayerMask);
+        public void SendClientVersionClientRpc(bool bIsEtheral, int nLayerMask) {
+            GameManager.Instance.ReceiveLayer(bIsEtheral, nLayerMask);
         }
 
         private void setPosition(Vector3 pos) {
