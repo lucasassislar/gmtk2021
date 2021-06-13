@@ -28,6 +28,8 @@ namespace ChainedWithMe {
 
         public CharacterController CharController { get; private set; }
 
+        public bool Interacting { get; private set; }
+
         public NetworkVariableVector2 Data = new NetworkVariableVector2(new NetworkVariableSettings {
             WritePermission = NetworkVariablePermission.Everyone,
             ReadPermission = NetworkVariablePermission.Everyone
@@ -108,7 +110,7 @@ namespace ChainedWithMe {
 
             if (IsOwner) {
                 float fHor = Input.GetAxisRaw("Horizontal");
-                float fVer = Input.GetAxisRaw("Vertical");                
+                float fVer = Input.GetAxisRaw("Vertical");
 
                 vInputData = new Vector2(fHor, fVer);
             }
@@ -119,6 +121,11 @@ namespace ChainedWithMe {
                         Jump();
                     }
                 }
+
+                Interacting = false;
+                if (Input.GetKeyDown(KeyCode.E)) {
+                    Interact();
+                }
             }
 
             if (!bSent) {
@@ -127,6 +134,24 @@ namespace ChainedWithMe {
                 GameManager gameManager = GameManager.Instance;
                 SendClientVersionClientRpc(gameManager.ClientEthereal, gameManager.ClientLayerMask);
             }
+        }
+
+        private void Interact() {
+            if (IsServer) {
+                InteractClientRpc();
+            } else {
+                InteractServerRpc();
+            }
+        }
+
+        [ClientRpc]
+        public void InteractClientRpc() {
+            Interacting = true;
+        }
+
+        [ServerRpc]
+        public void InteractServerRpc() {
+            Interacting = true;
         }
 
         private void Jump() {

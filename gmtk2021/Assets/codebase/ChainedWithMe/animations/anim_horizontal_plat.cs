@@ -19,7 +19,7 @@ public class anim_horizontal_plat : MonoBehaviour {
         bool pressedInteractButton = Input.GetKeyDown(KeyCode.E);
         bool isGoingFoward = animator.GetBool("isGoingFoward");
 
-        if(!isGoingFoward && )
+        //if(!isGoingFoward && )
 
 
 
