@@ -79,6 +79,14 @@ namespace ChainedWithMe {
                     (vData.x * -fSpeed * Time.deltaTime) + vToAdd.x,
                     (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime) + vToAdd.y,
                     (vData.y * -fSpeed * Time.deltaTime) + vToAdd.z));
+
+                if (fTimer > 0.25f) {
+                    float fDistance = Vector3.Distance(CharController.transform.position, Position.Value);
+                    if (fDistance > 0.25f) {
+                        fTimer = 0;
+                        setPosition(Position.Value);
+                    }
+                }
             }
 
             if (IsServer) {
@@ -103,13 +111,7 @@ namespace ChainedWithMe {
                 return;
             }
 
-            if (fTimer > 0.25f) {
-                float fDistance = Vector3.Distance(CharController.transform.position, Position.Value);
-                if (fDistance > 0.25f) {
-                    fTimer = 0;
-                    setPosition(Position.Value);
-                }
-            }
+            SendPosServerRpc();
         }
 
         private void Update() {
@@ -196,6 +198,11 @@ namespace ChainedWithMe {
         [ClientRpc]
         private void SendDataClientRpc(float fHor, float fVer) {
             Data.Value = new Vector2(fHor, fVer);
+        }
+
+        [ServerRpc]
+        private void SendPosServerRpc() {
+            Position.Value = CharController.transform.position;
         }
 
         [ClientRpc]
