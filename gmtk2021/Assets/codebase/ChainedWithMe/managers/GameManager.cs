@@ -28,11 +28,70 @@ namespace ChainedWithMe {
         public NetworkPlayerComponent EtherealPlayer { get; private set; }
 
         public int ClientLayerMask { get; private set; }
+        public bool ClientEthereal { get { return !bIsEthereal; } }
 
         public List<NetworkPlayerComponent> Players { get; private set; }
 
         public bool IsEthereal {
             get { return bIsEthereal; }
+        }
+
+        private void UpdateLayer() {
+            if (bIsEthereal) {
+                camera.cullingMask = CameraManager.layerEthereal;
+                ClientLayerMask = CameraManager.layerReal;
+            } else {
+                camera.cullingMask = CameraManager.layerReal;
+                ClientLayerMask = CameraManager.layerEthereal;
+            }
+        }
+
+        public void SwapView() {
+            List<NetworkPlayerComponent> netPlayers = Players;
+
+            bIsEthereal = !bIsEthereal;
+            UpdateLayer();
+
+            Vector3 vPos = RealPlayer.CharController.transform.position;
+
+            EtherealPlayer = null;
+            RealPlayer = null;
+
+            for (int i = 0; i < netPlayers.Count; i++) {
+                NetworkPlayerComponent player = netPlayers[i];
+
+                if (player.IsOwner) {
+                    if (bIsEthereal) {
+                        EtherealPlayer = player;
+                    } else {
+                        RealPlayer = player;
+                    }
+                } else {
+                    player.SendClientVersionClientRpc(ClientEthereal, ClientLayerMask);
+
+                    if (bIsEthereal) {
+                        RealPlayer = player;
+                    } else {
+                        EtherealPlayer = player;
+                    }
+                }
+            }
+
+            if (EtherealPlayer != null) {
+                EtherealPlayer.HidePlayerClientRpc();
+            }
+
+            if (RealPlayer != null) {
+                RealPlayer.ShowPlayerClientRpc(vPos);
+            }
+
+        }
+
+        public void ClientSwapView() {
+            List<NetworkPlayerComponent> netPlayers = Players;
+            for (int i = 0; i < netPlayers.Count; i++) {
+                NetworkPlayerComponent player = netPlayers[i];
+            }
         }
 
         private void Start() {
@@ -122,13 +181,7 @@ namespace ChainedWithMe {
 
                 objOverlay.SetActive(false);
 
-                if (bIsEthereal) {
-                    camera.cullingMask = CameraManager.layerEthereal;
-                    ClientLayerMask = CameraManager.layerReal;
-                } else {
-                    camera.cullingMask = CameraManager.layerReal;
-                    ClientLayerMask = CameraManager.layerEthereal;
-                }
+                UpdateLayer();
             }
         }
 

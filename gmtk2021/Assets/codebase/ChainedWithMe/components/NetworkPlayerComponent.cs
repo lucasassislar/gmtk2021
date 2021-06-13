@@ -130,7 +130,7 @@ namespace ChainedWithMe {
                 bSent = true;
 
                 GameManager gameManager = GameManager.Instance;
-                SendClientVersionClientRpc(!gameManager.IsEthereal, gameManager.ClientLayerMask);
+                SendClientVersionClientRpc(gameManager.ClientEthereal, gameManager.ClientLayerMask);
             }
         }
 
@@ -152,6 +152,13 @@ namespace ChainedWithMe {
         [ClientRpc]
         public void HidePlayerClientRpc() {
             HidePlayer();
+        }
+
+        [ClientRpc]
+        public void ShowPlayerClientRpc(Vector3 vPos) {
+            CharController.enabled = true;
+            meshRenderer.enabled = true;
+            SetPosition(vPos);
         }
 
         private void HidePlayer() {
