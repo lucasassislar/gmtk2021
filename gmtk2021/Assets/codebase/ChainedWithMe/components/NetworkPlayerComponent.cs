@@ -16,6 +16,8 @@ namespace ChainedWithMe {
 
         public MeshRenderer meshRenderer;
 
+        private AudioSource audioSource;
+
         private Vector2 vInputData;
         private float fTimer;
 
@@ -29,6 +31,8 @@ namespace ChainedWithMe {
         public CharacterController CharController { get; private set; }
 
         public bool Interacting { get; private set; }
+
+        public AudioClip clipJump;
 
         public NetworkVariableVector2 Data = new NetworkVariableVector2(new NetworkVariableSettings {
             WritePermission = NetworkVariablePermission.Everyone,
@@ -46,6 +50,8 @@ namespace ChainedWithMe {
             GameManager.Instance.StartGame(this);
 
             GameManager.Instance.RegisterRestartable(this);
+
+            audioSource = GetComponentInChildren<AudioSource>();
         }
 
         public void Restart() {
@@ -119,8 +125,10 @@ namespace ChainedWithMe {
 
             if (this == GameManager.Instance.RealPlayer) {
                 if (fJumpTimer > fJumpTime) {
-                    if (Input.GetKey(KeyCode.Space)) {
-                        Jump();
+                    if (CharController.isGrounded) {
+                        if (Input.GetKey(KeyCode.Space)) {
+                            Jump();
+                        }
                     }
                 }
 
@@ -167,11 +175,17 @@ namespace ChainedWithMe {
         [ClientRpc]
         public void JumpClientRpc() {
             fJumpTimer = 0;
+
+            audioSource.clip = clipJump;
+            audioSource.Play();
         }
 
         [ServerRpc]
         public void JumpServerRpc() {
             fJumpTimer = 0;
+
+            audioSource.clip = clipJump;
+            audioSource.Play();
         }
 
         [ServerRpc]

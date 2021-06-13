@@ -33,6 +33,11 @@ namespace ChainedWithMe {
 
         public List<NetworkPlayerComponent> Players { get; private set; }
 
+        public AudioClip clipGoing;
+        public AudioClip clipComing;
+
+        private AudioSource viewSource;
+
         public bool IsEthereal {
             get { return bIsEthereal; }
         }
@@ -47,7 +52,12 @@ namespace ChainedWithMe {
             }
         }
 
-        public void SwapView() {
+        public void SwapView(AudioSource source) {
+            viewSource = source;
+            if (!NetworkManager.Singleton.IsHost) {
+                return;
+            }
+
             List<NetworkPlayerComponent> netPlayers = Players;
 
             bIsEthereal = !bIsEthereal;
@@ -86,13 +96,12 @@ namespace ChainedWithMe {
                 RealPlayer.ShowPlayerClientRpc(vPos);
             }
 
-        }
-
-        public void ClientSwapView() {
-            List<NetworkPlayerComponent> netPlayers = Players;
-            for (int i = 0; i < netPlayers.Count; i++) {
-                NetworkPlayerComponent player = netPlayers[i];
+            if (bIsEthereal) {
+                source.clip = clipGoing;
+            } else {
+                source.clip = clipComing;
             }
+            source.Play();
         }
 
         private void Start() {
@@ -172,6 +181,15 @@ namespace ChainedWithMe {
             this.bIsEthereal = bIsEthereal;
 
             objOverlay.SetActive(false);
+
+            if (viewSource != null) {
+                if (bIsEthereal) {
+                    viewSource.clip = clipGoing;
+                } else {
+                    viewSource.clip = clipComing;
+                }
+                viewSource.Play();
+            }
         }
 
         public void StartGame(bool bIsHost) {

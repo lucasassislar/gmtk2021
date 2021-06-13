@@ -12,8 +12,15 @@ namespace ChainedWithMe {
         private bool bIsIdle;
         private float fTimeValue;
 
+        private AudioSource audioSource;
+
+        public AudioClip clipGoing;
+        public AudioClip clipComing;
+
         private void Start() {
             animator = GetComponentInChildren<Animator>();
+
+            audioSource = GetComponent<AudioSource>();
         }
 
         private void Update() {
@@ -33,6 +40,11 @@ namespace ChainedWithMe {
             if (bInsideTrigger && netPlayer.Interacting) {
                 if (bIsIdle) {
                     bIsGoingFoward = true;
+
+                    audioSource.clip = clipGoing;
+                    audioSource.Play();
+
+                    GameManager.Instance.AudioManager.PlayClick();
                 }
             }
 
@@ -42,6 +54,9 @@ namespace ChainedWithMe {
                 if (fTimeValue <= 0) {
                     bIsGoingFoward = false;
                     fTimeValue = fMaxPlatformTime;
+
+                    audioSource.clip = clipComing;
+                    audioSource.Play();
                 }
             }
 
