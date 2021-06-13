@@ -204,6 +204,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1525dfa318383274fb6b597b052b8895, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bInsideTrigger: 0
 --- !u!1 &4652480568240534468
 GameObject:
   m_ObjectHideFlags: 0
@@ -278,6 +279,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4652480568240534469}
     m_Modifications:
+    - target: {fileID: 5471933668873680182, guid: 0d49e61e3f32bcb4a898a5eaff7e010b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 224b857821444a840bdb757180a7ec4b, type: 2}
     - target: {fileID: 5832384572563166435, guid: 0d49e61e3f32bcb4a898a5eaff7e010b, type: 3}
       propertyPath: m_Name
       value: platform_vertical
