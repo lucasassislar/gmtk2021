@@ -120,6 +120,8 @@ namespace ChainedWithMe {
             if (Globals.IsHost) {
                 StartGame(true);
                 NetworkManager.Singleton.StartHost();
+            } else {
+                NetworkManager.Singleton.StartClient();
             }
         }
 

@@ -26,6 +26,8 @@ namespace ChainedWithMe.System {
 
             string ipAddress = txtIp.text;
             unet.ConnectAddress = ipAddress;
+
+            SceneManager.LoadScene("ChainedWithMe");
         }
     }
 }
