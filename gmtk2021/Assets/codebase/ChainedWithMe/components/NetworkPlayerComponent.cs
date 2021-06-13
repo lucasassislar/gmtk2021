@@ -1,4 +1,5 @@
-﻿using MLAPI;
+﻿using ChainedWithMe.Level;
+using MLAPI;
 using MLAPI.Messaging;
 using MLAPI.NetworkVariable;
 using System;
@@ -28,9 +29,8 @@ namespace ChainedWithMe {
 
         private float fCurrentJumpForce;
 
-        public CharacterController CharController { get; private set; }
 
-        public bool Interacting { get; private set; }
+        public CharacterController CharController { get; private set; }
 
         public AudioClip clipJump;
 
@@ -44,6 +44,18 @@ namespace ChainedWithMe {
             ReadPermission = NetworkVariablePermission.Everyone
         });
 
+        private PlayerTriggerComponent playerTrigger;
+
+        public void SetInside(PlayerTriggerComponent inside) {
+            this.playerTrigger = inside;
+        }
+
+        public void SetInsideOut(PlayerTriggerComponent inside) {
+            if (this.playerTrigger == inside) {
+                this.playerTrigger = null;
+            }
+        }
+
         private void Start() {
             CharController = GetComponentInChildren<CharacterController>();
 
@@ -56,6 +68,8 @@ namespace ChainedWithMe {
 
         public void Restart() {
             GameManager.Instance.StartGame(this);
+
+            this.playerTrigger = null;
         }
 
         private void FixedUpdate() {
@@ -74,19 +88,21 @@ namespace ChainedWithMe {
                     (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime) + vToAdd.y,
                      (vInputData.y * -fSpeed * Time.deltaTime) + vToAdd.z));
             } else {
-                Vector3 vData = Data.Value;
-                CharController.Move(new Vector3(
-                    (vData.x * -fSpeed * Time.deltaTime) + vToAdd.x,
-                    (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime) + vToAdd.y,
-                    (vData.y * -fSpeed * Time.deltaTime) + vToAdd.z));
+                //Vector3 vData = Data.Value;
+                //CharController.Move(new Vector3(
+                //    (vData.x * -fSpeed * Time.deltaTime) + vToAdd.x,
+                //    (fCurrentJumpForce * Time.deltaTime) + (fGravity * Time.deltaTime) + vToAdd.y,
+                //    (vData.y * -fSpeed * Time.deltaTime) + vToAdd.z));
 
-                if (fTimer > 0.05f) {
-                    float fDistance = Vector3.Distance(CharController.transform.position, Position.Value);
-                    if (fDistance > 0.1f) {
-                        fTimer = 0;
-                        setPosition(Position.Value);
-                    }
-                }
+                setPosition(Position.Value);
+
+                //if (fTimer > 0.05f) {
+                //    float fDistance = Vector3.Distance(CharController.transform.position, Position.Value);
+                //    if (fDistance > 0.1f) {
+                //        fTimer = 0;
+                //        setPosition(Position.Value);
+                //    }
+                //}
             }
 
             if (IsServer) {
@@ -118,8 +134,6 @@ namespace ChainedWithMe {
             fTimer += Time.deltaTime;
             fJumpTimer += Time.deltaTime;
 
-            Interacting = false;
-
             if (IsOwner) {
                 float fHor = Input.GetAxisRaw("Horizontal");
                 float fVer = Input.GetAxisRaw("Vertical");
@@ -128,14 +142,12 @@ namespace ChainedWithMe {
 
                 if (this == GameManager.Instance.EtherealPlayer) {
                     if (fJumpTimer > fJumpTime) {
-                        if (CharController.isGrounded) {
-                            if (Input.GetKey(KeyCode.Space)) {
-                                Jump();
-                            }
+                        if (Input.GetKeyDown(KeyCode.Space)) {
+                            Jump();
                         }
                     }
 
-                    if (Input.GetKey(KeyCode.E)) {
+                    if (Input.GetKeyDown(KeyCode.E)) {
                         Interact();
                     }
                 }
@@ -159,21 +171,32 @@ namespace ChainedWithMe {
 
         [ClientRpc]
         public void InteractClientRpc() {
-            Interacting = true;
+            if (this.playerTrigger == null) {
+                return;
+            }
+
+            this.playerTrigger.Interact();
         }
 
         [ServerRpc]
         public void InteractServerRpc() {
-            Interacting = true;
+            if (this.playerTrigger == null) {
+                return;
+            }
+
+            this.playerTrigger.Interact();
         }
 
         private void Jump() {
+            fJumpTimer = 0;
+
             if (IsServer) {
                 JumpClientRpc();
             } else {
                 JumpServerRpc();
             }
         }
+
 
         [ClientRpc]
         public void JumpClientRpc() {
@@ -185,7 +208,7 @@ namespace ChainedWithMe {
 
         [ServerRpc]
         public void JumpServerRpc() {
-            fJumpTimer = 0;
+            GameManager.Instance.RealPlayer.fJumpTimer = 0;
 
             audioSource.clip = clipJump;
             audioSource.Play();
@@ -245,10 +268,7 @@ namespace ChainedWithMe {
             if (!CharController) {
                 CharController = GetComponent<CharacterController>();
             }
-
-            CharController.enabled = false;
-            CharController.transform.position = pos;
-            CharController.enabled = true;
+            setPosition(pos);
         }
     }
 }
